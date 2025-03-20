@@ -1,0 +1,7 @@
+"0","path <- ""Data/d.Adoption/Statista2024.xlsx"""
+"0","d.Adoption <- read.xlsx(path, sheet = ""Data"")"
+"0","d.Adoption %>%"
+"0","  head() %>%"
+"0","  kable(col.names = c(""Country"", ""2019"", ""2020"", ""2021"", ""2022"", ""2023"", ""2024""), "
+"0","        caption = ""Statista (2024a) Data: \\ Share (Percentage) of Respondents Who Reported Using Cryptocurrency in Select Years"") %>%"
+"0","  kable_styling(full_width = F, latex_options = ""hold_position"")"

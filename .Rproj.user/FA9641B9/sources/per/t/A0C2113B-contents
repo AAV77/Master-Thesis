@@ -1,0 +1,620 @@
+---
+#title: "Checking Out: Bitcoin as Currency Substitution?"
+#subtitle: "Preliminary Study"
+#author: 
+#  - "Alec Vayloyan, MSc Student Applied Information and Data Science"
+#  - "Supervisors: Dr. Denis Bieri (main), Dr. Thomas Ankenbrand (co-supervisor)" 
+#date: "Submission for 2024-10-24"
+output:
+  bookdown::pdf_document2:
+    toc: yes
+    toc_depth: 3  # Show levels 1-3 in TOC
+    number_sections: true
+  pdf_document:
+    toc: yes
+    toc_depth: 3  # Show levels 1-3 in TOC
+    number_sections: true
+  bookdown::html_document2:
+    toc: yes
+    toc_depth: 3  # Show level 1-3 in TOC without numbering
+header-includes:
+  - \usepackage{tocloft}  # Customizing TOC in PDF
+  - \renewcommand{\cftsecfont}{\large}  # Section title font size in TOC
+  - \renewcommand{\cftsubsecfont}{\normalsize}  # Subsection font size in TOC
+  - \renewcommand{\cftsecpagefont}{\normalsize}  # Section page number font size in TOC
+  - \renewcommand{\cftsubsecpagefont}{\normalsize}  # Subsection page number font size in TOC
+  - \setlength{\cftbeforesecskip}{0pt}  # Reducing vertical space between section entries
+  - \setlength{\cftbeforesubsecskip}{0pt}  # Reducing vertical space between subsection entries
+  - \setcounter{secnumdepth}{2}  # Stop numbering after level 2 (sections and subsections)
+  - \setcounter{tocdepth}{3}  # Show level 3 (and deeper) in TOC
+  - \usepackage{titling}  # Reduce space between title elements
+  - \setlength{\droptitle}{-3em}  # Move title up by 3em
+  - \setlength{\parindent}{0pt}  # Remove indentation in title page
+  - \setlength{\parskip}{1em}  # Reduce space between paragraphs
+  - \setlength{\cftbeforetoctitleskip}{-2em}  # Move TOC title closer
+  - \usepackage{fancyhdr}  # For custom headers/footers
+  - \fancyhf{}  # Clear default header/footer
+  - \renewcommand{\headrulewidth}{0pt}  # Remove header line
+  - \fancyfoot[C]{Page \thepage\ of \pageref{LastPage}}  # Custom page numbering "Page X of Y"
+  - \usepackage{lastpage}  # Allows reference to the last page number
+  - \pagenumbering{gobble}  # Suppress page numbering on the first page
+  - \thispagestyle{empty}  # Explicitly remove the page number from the first page
+  - \pagestyle{fancy}  # Enable fancyhdr for all pages except the first
+  - \usepackage{float}
+  - \usepackage{placeins}
+bibliography: references.bib  # Correctly include the bibliography file
+csl: apa.csl  # Ensure correct citation style is used
+link-citations: yes  # Enable linking for in-text citations
+nocite: |
+  @worldbank2024_GDP, @worldbank2024, @worldbank2024_Inflation, @worldbank2024_RemittReceived, @focuseconomics2024, @imf2024
+cache: no
+---
+
+\newpage
+
+\pagenumbering{arabic}
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r getting libraries, include = F, warning = F}
+library(dplyr)
+library(rvest)
+library(xml2)
+library(httr)     # OpenAI Access
+library(jsonlite) # OpenAI Access
+library(mice)     # Evaluating Missings
+library(tidyr)
+library(tibble)
+library(openxlsx)
+library(kableExtra)
+library(knitr)
+library(bookdown)
+library(openxlsx)
+library(ggplot2)
+```
+
+```{r setting working directory, include = F,}
+setwd("C:/Users/vaylo/OneDrive/Desktop/Masters Thesis/Working Directory/Data")
+```
+
+```{r d.Country_Codes, include = F }
+# Loading World Bank country codes from a website
+url <- "https://irows.ucr.edu/research/tsmstudy/wbcountrycodes.htm" 
+html_content <- read_html(url)
+
+d.Country_Codes <- html_content %>%
+  html_node("table") %>%  
+  html_table()
+
+#Cleaning Up
+d.Country_Codes <- d.Country_Codes %>% 
+  rename(Country.Name = X1, Country.Code = X2) %>% 
+  slice(-(1:2)) %>% 
+  filter(!row_number() %in% c(4, 9, 21, 62, 66, 72, 74, 76, 77, 79, 118,     131, 132))
+
+
+v.Country_Codes <- d.Country_Codes$Country.Code
+remove(url,html_content) 
+```
+
+```{r indicator list, include = F}
+d.Indicators <- data.frame(
+  Indicator = character(),
+  Indicator_Code = character()
+)
+
+unique_combinations <- function(df, col1_name, col2_name) {
+  # Get the unique values of both specified columns
+  col1_values <- unique(df[[col1_name]])
+  col2_values <- unique(df[[col2_name]])
+  
+  # Create a data frame with all unique combinations of the two columns
+  combinations_df <- expand.grid(Col1 = col1_values, Col2 = col2_values)
+  
+  return(combinations_df)
+}
+```
+
+```{r d.Inflation, include = F}
+path <- "Data/d.Inflation/API_FP.CPI.TOTL.ZG_DS2_en_csv_v2_3401965.csv"
+
+# Loading Raw Data
+d.Inflation <- read.csv(path, header = T, skip = 4) 
+
+# Extracting indicators and putting them in a separate running tally 
+indicators <- unique_combinations(d.Inflation,"Indicator.Name", "Indicator.Code")
+colnames(indicators) <- colnames(d.Indicators)
+d.Indicators <- rbind(d.Indicators, indicators)
+remove(indicators)
+
+# Cleaning Data d.Inflation
+d.Inflation <- d.Inflation %>% 
+  filter(Country.Code %in% v.Country_Codes) %>% 
+  select(Country.Code,Indicator.Code, X2017:X2023)
+
+#Changing row names to first column and removing previous row names
+rownames(d.Inflation) <- d.Inflation$Country.Code
+
+d.Inflation <- d.Inflation %>% 
+  select(-Country.Code)
+
+
+```
+
+```{r d.GDP, include = F}
+# Working with GDP per Capita -> 
+# Source: https://data.worldbank.org/indicator/NY.GDP.PCAP.CD
+
+path <- "Data/d.GDP/API_NY.GDP.PCAP.CD_DS2_en_csv_v2_3401556.csv"
+
+# Loading Raw Data
+d.GDP <- read.csv(path, header = T, skip = 4) 
+
+# Extracting indicators and putting them in a separate running tally 
+indicators <- unique_combinations(d.GDP,"Indicator.Name", "Indicator.Code")
+colnames(indicators) <- colnames(d.Indicators)
+d.Indicators <- rbind(d.Indicators, indicators)
+remove(indicators)
+
+# Cleaning Data d.GDP
+d.GDP <- d.GDP %>% 
+  filter(Country.Code %in% v.Country_Codes) %>% 
+  select(Country.Code,Indicator.Code, X2017:X2023)
+
+#Changing row names to first column and removing previous row names
+rownames(d.GDP) <- d.GDP$Country.Code
+
+d.GDP <- d.GDP %>% 
+  select(-Country.Code)
+```
+
+# Background
+
+The development of Bitcoin, spawned alongside blockchain technology, have challenged traditional monetary systems and economic structures. Since its inception in the wake of the Global Financial Crisis, Bitcoin has been championed by advocates for its decentralized nature, security, and potential as a hedge against failing fiat currencies. Bitcoin is often viewed as a solution for individuals and nations where conventional financial systems are dysfunctional or highly volatile, providing an alternative currency that is not vulnerable at a single point of failure.
+
+In contrast to fiat currencies, which derive their value from governmental decree and are backed by legal frameworks, Bitcoin operates on a decentralized network of peer-to-peer transactions that do not rely on a central authority. This decentralized nature means that Bitcoin transactions are verified by a distributed ledger known as blockchain, rather than by a trusted intermediary like a bank. In addition, the reduction and eventual cessation of issuance of new Bitcoin through the network design has led to some claiming the network is deflationary by design [@ammous2018]. These two factors combined has spawned the belief that Bitcoin is immune to inflationary pressures, government control, and political instability, which can all negatively affect those using fiat currencies in the *status quo* financial system.
+
+However, Bitcoin's adoption has not been uniform. Factors driving its adoption vary greatly across regions and are often context-specific, such as inflationary pressures, technological accessibility, and government regulations. Understanding the global drivers of Bitcoin adoption, particularly in the context of emerging markets, provides valuable insights into its potential future size and role in the global financial system.
+
+In parallel, a vast body of literature exists around the concept of *currency substitution*, where individuals in a country predominatley use foreign currencies, rather than their local currencies for the functions of money [@calvo2002]. The fundemental drivers behind currency substitution and the adoption of Bitcoin are, in many ways, similar, with individuals often turning to foreign currencies or decentralized alternatives when local currencies fail to serve them.
+
+This research draws upon the well-established theories of currency substitution to explore the factors driving Bitcoin adoption. By examining the similarities between currency substitution and Bitcoin adoption, this study aims to determine whether the predictors of currency substitution can be built into models of cryptocurrency adoption to improve the explanatory power.
+
+## Relevance
+
+This research is relevant for both academics and policymakers. This contribution is valuable to the academic literature since the existing models cannot fully explain the differences in adoption seen across countries. In terms of policymakers, it is important for them to be able to understand how changes in underlying economic conditions may influence the use of Bitcoin as this will have policy implications, particularly around monetary policy. As will be seen in the section [Dependent Variable: Bitcoin Adoption] this research makes use of a new and to my knowledge previously not studied panel dataset of Bitcoin adoption that will be able to capture the most recent trends in this area.
+
+# Topic Definition
+
+Bitcoin has been touted as having numerous benefits and reasons for adoption. One such benefit is that of providing a "way out" of poorly functioning financial systems. There are two key reasons for this: the internet-based nature and relative price stability.
+
+Firstly, the internet based nature means that most people with a smartphone and internet can relatively easy obtain the necessary infrastructure to buy and sell cryptocurrencies, like Bitcoin. This extends beyond political borders - there is nothing intrinsically hindering people on certain platforms from trading with each other.
+
+Secondly, depending on the inflationary context, the price of Bitcoin can be relatively stable. Stability of a local currency is usually measured either against inflation or a exchange rate to a major currency. There are a number of countries where the change in inflation or value against major currencies exceeded the change in price of Bitcoin.
+
+The use of alternative currencies by people is not new, there is an entire body of research devoted to this practice, known as *currency substitution*. Currency substitution is defined by @calvo2002 as the highly prevalent use of [foreign]{.underline} fiat currencies to fulfill any of the three functions of money (store of value, means of exchange, unit of account). Note, there is also something known as *official currency substitution*, which is when a government officially adopts a foreign currency as a legal tender in their own country. However, this paper refers to the personal and in unofficial use by individuals.
+
+For the definition of the research topic, two questions / fields are of interest: "What drives currency substitution?" and "What drives the adoption of Bitcoin?" These topics will not be investigated in 2 separate literature reviews.
+
+## Literature Review: Currency Substitution {#lr_cs}
+
+### Currency Stability
+
+#### Inflation
+
+Both perceived and real economic problems are identified in the literature as reasons for people to engaging in currency substitution, the primary economic issue here is inflation. There are quantitative studies, such as those by @vieira2012 and @rennhack2006 finding inflation is a key predictor of currency substitution. Another quantitative paper @honig2009 argues that lack of trust in the stability of the local currency leads people to use foreign currencies. Finally, an implicit argument for the viewpoint that inflation leads to currency substitution is made by @kokenyne2010 who argue countries wishing to stop currency substitution from happening in their domestic economies should focus their efforts on taming excess inflation. This claim is backed up by a practical study of the Turkish economy by @tasseven2015 who argues that foreign currencies were used precisely due to the high and inflation in the 1990s an then began falling out of favor as price stability increased. @levy2021 makes a similar conclusion when he credits inflation first, among a number of factors for the success of many Latin American countries to reduce currency substitution, which is oftentimes seen as negative in the eyes of policymakers. Although a considerable amount of studies credit inflation as positively related to currency substitution, one study focusing on Croatia, Slovenia and Slovakia by @stix2011 did not find inflation to be a contributing factor to currency substitution.
+
+#### Exchange Rate
+
+Another measure of currency stability, the volatility of exchange rates to major currencies is also oftentimes found to be important in relation to why individuals in countries begin using a foreign currency. Using a threshold ARCH model on 28 countries and an auto regressive distributed lag model of Nigeria, @ju and @ajibola2021 respectively find that there is a correlation between the foreign exchange rate volatility and the use of foreign currencies. Contrary to these findings however, the already mentioned study by @stix2011 also did not find exchange rate volatility to be a contributing factor to currency substitution.
+
+### Risk of Sovereign Default
+
+The risk of a sovereign default also appears in the literature on currency substitution, although less clearly than inflation. @vieira2012 find this to be a stronger predictor of currency substitution than inflation in their quantitative study on 79 economies at different development levels. To the best of my knowledge no other studies have evaluated this convincingly. Although @vieira2012 do quote a number of papers as foundations for evaluating the risk of sovereign in their review, many of these do not clearly claim the logic applied by @vieira2012. Other studies tend in the area focus on official currency substitution and the effect that this choice has on the risk of sovereign default [@berg2000, @sims2001]. Little consideration is given to the case of currency substitution as a choice by individuals and how this choice is influenced by the risk of sovereign default. However, the study be @vieira2012 clearly shows it's importance and therefore this factor should be included in a study on the topic
+
+### Technology
+
+There are also some studies arguing the advancement of technology will aid in facilitating currency substitution. @guidotti1993 argues using a theoretical model, that the reduction on transaction and holding costs to foreign currency, spurred by financial innovation can promote it's use. Such a theory is practically backed up a study of Nigeria by @ujunwa2021 who take an augmented money demand model which includes markers for technology (for example: internet banking transactions) and find that these are strong predictors of foreign currency use. It is therefore not far fetched to argue that a new technology like Bitcoin could spur the use of currency substitution, even if this implies the use of a new "currency", so long as this currency has the potential to reduce transaction and holding costs, which the fundamentals of Bitcoin definitely do.
+
+## Literature Review: Adoption of Bitcoin {#lr_btc}
+
+There is a wide body of literature studying the usage of Bitcoin that finds several of the factors connected to currency substitution to be linked to the adoption of Bitcoin.
+
+### Inflation
+
+There are a number of studies that have evaluated the relationship between Bitcoin and Inflation. @conlon2021, @choi2022 and @gaies2024 study time series data on Bitcoin prices and find that they are correlated positively to inflation or inflation expectations, mixed evidence is presented by @phochanachan2022 who find the inflation hedge is only present in the short term. Academic case studies of countries using Bitcoin in response to inflation are limited, only @taskinsoy comes up. He argues that the relative instability of the Turkish Lira is what drives many in the country to use Bitcoin instead.
+
+Similar studies as mentioned at the beginning of the section study time series data of inflation and the price of Bitcoin, these however find no effect of correlation betoin Bitcoin (@basher2022 , @smales2024). In studying economies, both @parino and @ricci2020 find that there is a negative effect of Inflation on the price of Bitcoin. However it should be noted that the former focused on data from before 2015, which may have been too early to see adoption in developing countries and the latter only evaluated already developed economies which have seen lower levels of inflation compared to developing countries.
+
+### Investment
+
+@voskobojnikov2020 conduct interviews among North American respondents and find investment is one of the main intended uses of Bitcoin among non-users. Quantitative studies back this up. @glaser2014 find that the pattern of trading on the former Mt. Gox cryptocurrency trading platform implies that users were investing, not using the currency for payments. This is because while the value of currencies on individual accounts did change, the total value on the exchange did not change significantly. To the authors, this suggested that users were shuffling funds between each other, but not using the cryptocurrencies for payments. It must be noted that while cryptocurrencies are not just Bitcoin, Bitcoin is by far the largest.
+
+### Wealth
+
+Wealth is a well established factor connected to to Bitcoin in academia, studied through various methods. @lammer2019 studied German bank accounts and found wealthier people were more likely to own Bitcoin. This conclusion is backed up on a national scale by @parino who found GDP per capita to be positively correlated to Bitcoin ownership. The results of the two studies indicate that volatile assetts like Bitcoin are bought only by those who can afford to take temporary losses when the price of the asset decreases.
+
+### Sins
+
+The use of cryptocurrencies in areas that can be considered wrong, illegal or immoral is also a driver of their usage in many cases. This is a fairly diverse list, so only some illustrative examples will be presented here. It ranges from using Bitcoin to pay for illicit goods and services, such as was done on the now shut down Silk Road dark - web sites [@saurabh2017]. Research has found that countries with larger shadow economies, the Bitcoin trading volume is much more strongly responsive to shocks to the shadow marked (raids, seizures), indicating Bitcoin is used for illicit transactions [@marmora2021]
+
+Sanctioned countries have also looked at using or creating cryptocurrencies to evade sanctions on their exports or transactions [@sarvi2020, @macfarlane2021]. @chainalysis2020 further finds that 75% of all cryptocurrency transaction on a randomly selected Venezuelan exchange were over USD 1000, given the relatively low wages in the country, it is likely that this represents sanctioned individuals attempting to move funds out of the country.
+
+### Remittances
+
+Another potential for the adoption of Bitcoin is for remittance payment. This has not been studied extensively academically but the economic fundamentals and some practical examples show the potential. Fees for remittance payments can be very expensive, between 6.9-20% according to @ruehmann2020. As such, the technology of Bitcoin which can have incredibly low fees, typically between 0-1% according to @dyhrberg2018 . This low cost has led some academics (like @folkinshteyn2015) to argue Bitcoin could form an important aspect of lower remittance costs. This cost, is what was the official reason behind El Salvador making Bitcoin legal tender in 2021 [@bbc2021].
+
+### Capital Controls
+
+There exists research that claims capital controls to be relevant to the adoption of Bitcoin. @carlson2016 conducts expert interviews on the Argentine example and finds that capital controls can and are being evaded using Bitcoin. @hu2021 study Chinese Bitcoin transaction and find that 25% of the transaction volume represents capital flight out of the country. @viglione2015 find a similar result in a quantitative analysis of multiple economies. They see a "premium" being paid for Bitcoin in these countries, which they interpret as an extra demand for Bitcoin relative to other countries, which they interpret as "extra demand".
+
+# Main Research Question
+
+Due to the similarity in potential uses of foreign currency and Bitcoin, I propose investigating whether a model that evaluates not only the predictors of Bitcoin usage (Inflation, Investment, Wealth, Sins, Remittances, Capital Controls), but also the additional factor of sovereign default risk can improve a model of Bitcoin adoption. To my knowledge, no such research paper has been done. Technology is not explicitly included as a predictor, despite it's discovery in the literature since this is assumed to be fully covered by the introduction of Bitcoin, itself, a new technology.
+
+The research question can therefore be summarized as: *Does the inclusion of predictors of currency substitution in a model explaining Bitcoin adoption improve the models explanatory power?*
+
+#### Statistical Research Question
+
+```{=tex}
+\begin{align*}
+\text{Bitcoin}_{i,t} &= \beta_0 + (\beta_1 \cdot \text{Currency Stability}_{i,t}) \\
+&+ (\beta_2 \cdot \text{Investment}_{i,t}) \\
+&+ (\beta_3 \cdot \text{Wealth}_{i,t}) \\
+&+ (\beta_4 \cdot \text{Sins}_{i,t}) \\
+&+ (\beta_5 \cdot \text{Remittances}_{i,t}) \\
+&+ (\beta_6 \cdot \text{Capital Controls}_{i,t}) \\
+&+ (\beta_7 \cdot \text{Sovereign Default Risk}_{i,t}) + \varepsilon_{i,t}
+\end{align*}
+```
+#### Hypothesis:
+
+Formally, the null and alternative hypothesis are:
+
+$H_0$: The factors predicting currency substitution do not improve the \newline predictive power of a model explaining Bitcoin adoption. $B_7=0$
+
+$H_1$: The factors predicting currency substitution improve the predictive \newline power of a model explaining Bitcoin adoption. $B_7\ne0$
+
+The alternative hypothesis does not specify a direction of effect due to the limited research on sovereign default risk and Bitcoin adoption. Although the expectation is that countries with a higher risk of sovereign default will have a higher Bitcoin adoption, as this is the direction seen in the effect of sovereign default risk on currency substation.
+
+**Significance Level:** Due to the limited data size and therefore statistical power of this paper (see [Underlying Data]) a unusually high significance level ($\alpha=0.1$) will be used.
+
+Where:
+
+$\beta_0$: The intercept, representing the baseline level of Bitcoin adoption when all predictors are equal to zero.
+
+$\beta_1, \beta_2, \dots, \beta_7$: Coefficients for each independent variable, showing the expected change in Bitcoin adoption for a one-unit change in the respective predictor, holding all other variables constant.
+
+$i$: Denotes the cross-sectional unit (country or region) in the panel data.
+
+$t$: Denotes the time period in the panel data.
+
+$\varepsilon_{i,t}$: The error term, capturing unobserved factors.
+
+The exact methodology used to construct the input - output relationship between predictors and response will need to be found at a later point. However, the existing literature provides a good starting point.
+
+# Methodology
+
+This section will discuss common methodologies used by different studies and what makes sense in the context of the research question.
+
+## Supervised
+
+### Time Series Models
+
+A large number of studies, both in the currency substitution and Bitcoin adoption literature use variations of time series models, these are including but not limited to continuous wavelet transformers in @conlon2021, vector autoregression in @choi2022 and Markov switching vector autoregression in @phochanachan2022 and even tree based models in @basher2022. These are appropriate choices in many cases, however they are unlikely to work in the context of exploring currency substitution predictor's effect on Bitcoin adoption since two of the predictors of currency substitution identified in the literature (technology and risk of sovereign default) are fundamental factors that do not change substantially at the frequencies required for time series analysis, as such, this level of granularity would be inappropriate for this research question.
+
+### Fixed Effects
+
+Interestingly, fixed effect models do not show up often in the literature around this topic. Nevertheless they may be interesting to look at given their usual use in statistics. Fixed effects allow accounting for unobserved heterogeneity (variation not due to independent variables) that does not change over time and remains constant between, in the case of this study, countries [@amin2024]. Since it is likely that a large number of country-specific factors still influence the adoption of Bitcoin, such a model will be a worthwhile inclusion.
+
+### Random Effects
+
+To account for the effect of multiple years across multiple countries @ricci2020 use a multilevel (also known as: multilevel mixed effects / hierarchical models [@heiss2021]). In the study observations over time represents the first level while the country represents the second level. Such analysis can consider both the temporal and location specif influences which are suitable in the case of this study since it is likely that there are fundemental factors. While this is attractive in principle it requires two preconditions that are not necessarily met in the case of the @statista_adoption data, according to @dougherty2011:
+
+\vspace{0.8cm}
+
+1.  Observations are randomly drawn from the population.
+2.  Unobserved effects must be randomly distributed across the relevant features in the observation.
+
+It is not possible to assume condition 1 above, as @statista_adoption does not discuss how the countries were sampled, and as a commercial platform with limited resources (as shown by the fact that not all countries were evaluated), they likely picked countries they believed *a priori* to be more interesting.
+
+### Dynamic Panel Estimation
+
+In an attempt to deal with endogenity associated with countries @viglione2015 uses a generalized methods of moments dynamic panel estimator. This model can deal with the lagged explanatory variables highly likely to effect current values of the response variable. If my own study were to evaluate the lagged predictors as an input in the current model, this might be one suitable approach. Such models appear also in the literature on currency substitution, chiefly by @vieira2012.
+
+### Spearman Correlation Analysis
+
+To evaluate the impact of a number of economic indicators across time @parino use, spearman correlation analysis. This is a method working based off the relative ranking of variables and evaluates the strength of monotonic (always increasing or decreasing) relationship between two variables. It has the benefit of working on non-linear data, but requires an approximately monotonic relationship and can only be used to evaluate the relationships between two variables [@spearman]. Thus in their study @parino run a large number of spearman corrrelations for each response variable and each year under evaluation. The drawback here is that there is no possibility to control for other factors but this could be useful in the following cases:
+
+1.  Robustness check for results determined using other model(s).
+2.  In case of having to use Google Trends as a plan B for Bitcoin adoption. Since, the Google Trends data is naturally ranked and not absolute.
+
+## Unsupervised
+
+A number of unsupervised models could be applied to identify clusters of different countries sharing similarities. Depending on the results these classifications could be built into the supervised learning models to get results which can be generalized to countries fitting this category beyond just those in the dataset.
+
+\newpage
+
+# Underlying Data
+
+## Dependent Variable: Bitcoin Adoption
+
+Bitcoin adoption is measured using a newly released dataset by @statista_adoption. The dataset is the results of a survey where respondents were asked if they had used cryptocurrency in the given year. Although this statistic measures cryptocurrency, and not Bitcoin adoption, it is still an appropriate proxy given that Bitcoin, has and always had had by far the largest market capitalization of any cryptocurrency. The data's first few rows can be seen in Table \@ref(tab:Adoption) below. Due to the unavailability of data for the other variables for the year 2024, only data up to 2023 will be used from this set. The use of cryptocurrency adoption as a proxy for Bitcoin adoption is a appropriate proxy since Bitcoin has, and always had the largest market capitalization of any cryptocurrency [@statista_btc_share]. The data is available for 56 countries of different levels of economic development.
+
+```{r Adoption, echo = F }
+path <- "Data/d.Adoption/Statista2024.xlsx"
+d.Adoption <- read.xlsx(path, sheet = "Data")
+d.Adoption %>%
+  head() %>%
+  kable(col.names = c("Country", "2019", "2020", "2021", "2022", "2023", "2024"), 
+        caption = "Statista (2024a) Data: \\ Share (Percentage) of Respondents Who Reported Using Cryptocurrency in Select Years") %>%
+  kable_styling(full_width = F, latex_options = "hold_position")
+```
+
+## Predictors: Independent and Control Variables
+
+Table \@ref(tab:datatable) shows an overview of the Indicators used as Proxies and their sources. The Indicators for Currency Stability, Investment, Wealth, Remittances and Risk of Sovereign Default should be self-explanatory and will not be discussed.
+
+```{r, datatbl, echo = F, results = "asis"}
+# Create the data frame with citations and special characters handled
+lit_data_sources <- data.frame(
+  Indicator = c( "Inflation, consumer prices (annual %)",
+                 "Gross domestic savings (% of GDP)", 
+                 "GDP per capita (current US$)",
+                 "Political Corruption Index",
+                 "Personal remittances, received (% of GDP)", 
+                 "Exact Metric tbd.",
+                 #"Mobile Access (%)",
+                 "External Debt (% of GDP)"),
+  Proxy_for = c("Currency Stability", 
+                "Investment", 
+                "Wealth",
+                "Sins",
+                "Remittances",
+                "Capital Controls",
+                #"Technology",
+                "Risk of Sovereign Default"),
+  Source = c("World Bank (2024c)",
+             "World Bank (2024b)",
+             "World Bank (2024a)",
+             "V-Dem (2024)",
+             "World Bank (2024d)",
+             "IMF (2024)",
+             #"World Bank",
+             "Focus Economics (2024)"
+  )
+)
+
+# Generate the table using kable
+lit_data_sources %>%
+  kable(col.names = c("Indicator", "Proxy for", "Source"), caption = "Overview of Data Sources for Independent Variables (\\#tab:datatable)") %>%
+  kable_styling(full_width = F, latex_options = "hold_position")
+
+
+```
+
+The following indicators must be additionally discussed: Sins, Capital Controls
+
+**Sins:** A single indicator is used to encompass all of the Sinful uses of Bitcoin. The two primary sinful uses are criminality and the evasion of sanctions. Since Western countries routinely sanction individuals and not the countries themselves based on corruption, human rights abuses and other serious accusations, it makes sense to use corruption as a proxy for individual sanctions that people may attempt to circumvent using Bitcoin [@u.s.departmentofthetreasury2022]. Using corruption as a proxy for crime is also a possible approach as the link between corruption and (in particular organized) crime as been shown several regions in several studies [@buscaglia2003; @centerforthestudyofdemocracy2010; @mazzitelli2007] Therefore, the political corruption index, published by @politica2024 is used in an attempt to cover both crime and the likelihood that individuals attempt to move dirty money abroad. In a study with more data quantity available it would make sense to use more granular indicators, however due to the already small data size, the trade off of including several variables for the sinning attribute identified in the literature would be too adverse on the statistical power.
+
+**Capital Controls:** Since capital controls have been identified as important in section [Capital Controls], they must be accounted for an a model attempting to explain Bitcoin adoption. Unfortunately there is a lack of structured and recent data around this topic. The most recent data was collected by @fernandez2016 and was updated with data up to 2017, who produced an index. The source used here will be from the online query tool of @imf2024 which allows the recovering of information contained in the annually published Report on Exchange Arrangements and Exchange Restrictions, specifically the 5 indicators for "Controls on Personal Payments", "Prior Approval", "Quantitative Limits", "Indicative Limits / Bona Fide Test" and "Controls on Personal Capital Transactions". The keys limitation of this dataset is that the data is only available until 2022. However, there are techniques available to deal with this kind of missing data, such as imputing the mean for each row (if option 2. below is selected) or the last available value, to avoid data loss. This will be particularly important as data size and statistical power are already identified as risk factors.
+
+The first rows of the raw data can be seen in Table \@ref(tab:d) below.
+
+```{r, d, echo = F}
+path <- "Data/d.CC/IMF (2024).xlsx"
+d.CC <- read.xlsx(path)
+d.CC %>%
+  head() %>%
+  kable(
+    col.names = c("Year", "IFS Code", "Country", 
+                  "Controls Personal \\ Payments",  
+                  "Prior \\ Approval",
+                  "Quantitative \\ Limits",
+                  "Indicative Limits / \\ Bona Fide Test",
+                  "Controls on Personal \\ Capital Transactions"),
+    escape = FALSE,  # Allows LaTeX commands like \\ to be used
+    caption = "IMF (2024) Capital Controls Dummy Data",
+    format = "latex"
+  ) %>%
+  kable_styling(full_width = F, latex_options = c("scale_down","H")) %>%
+  column_spec(1, width = "0.7cm") %>%  # Custom width for Year
+  column_spec(2, width = "1.5cm") %>%    # Custom width for IFS Code
+  column_spec(3, width = "1.7cm") %>%    # Custom width for Country
+  column_spec(4, width = "2.2cm") %>%    # Custom width for Controls Personal Payments
+  column_spec(5, width = "2.0cm") %>%  # Custom width for Prior Approval
+  column_spec(6, width = "2.3cm") %>%  # Custom width for Quantitative Limits
+  column_spec(7, width = "3.3cm") %>%  # Custom width for Indicative Limits / Bona Fide Test
+  column_spec(8, width = "3.5cm")      # Custom width for Controls on Personal Capital Transactions
+```
+
+\FloatBarrier
+
+There are a number of possibilities in proceeding, I would like to discuss the best option moving forward:
+
+1.  Selecting the most appropriate indicator (there are more on the [website](https://www.elibrary-areaer.imf.org/Pages/ChapterQuery.aspx)).
+2.  Selecting multiple appropriate indicators and converting them into an index, where a value for a "yes" indicator would be 1 and a no indicator 0, giving a index score between 0-1 for the entire capital controls variable.
+
+\newpage
+
+# Structured List of Academic Sources
+
+## Literature Area 1: Drivers of Currency Substitution
+
+Figure \@ref(fig:ltCS) below shows the overview of the key literature on currency substitution and in relation to this research. It is a graphical representation of the text in section: [Literature Review: Currency Substitution](#lr_cs).
+
+```{=tex}
+\begin{figure}[H]
+
+\centering
+
+\includegraphics[width=\textwidth]{review_CS.png}
+
+\caption{Overview of Currency Substitution Literature}
+\label{fig:ltCS}
+
+\end{figure}
+```
+\newpage
+
+## Literature Area 2: Drivers of Bitcoin Adoption
+
+Figure \@ref(fig:ltBTC) below shown the overview of the key literature on the adoption of cryptocurrencies in relation to this research. It is a graphical representation of the text in section: [Literature Review: Adoption of Bitcoin](#lr_btc).
+
+```{=tex}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{review_bbtc.png}
+  \caption{Overview of Bitcoin Adoption Literature}
+  \label{fig:ltBTC}
+\end{figure}
+```
+\newpage
+
+# Project Risks
+
+There are several risks in this project that need to be accounted for.
+
+## Data Size
+
+The data size is limited primarily by the response variable @statista_adoption. While there would be more data available for the predictors going back further in time, without a sensible response variable it does not make sense to load and evaluate those. Furthermore not only is the timeframe being limited by the response variable's availability, only 56 out of 195 countries are represented. The @imf2024 database also limits the capital control predictor by only being available up to and including 2022. However unlike the response variable, this lack of data for capital controls can be dealt with by using imputation.
+
+As a plan B , in case more data is needed, looking at Google Trends data could be an option. While this data would be available for most countries going back to 2008, when Bitcoin and blockchain technology was created, this data has the inherent limitation that it can only give *relative indications* of popularity for each year. This approach has been used by @parino and they also provide other interesting alternatives for measuring Bitcoin adoption in case the choosen dataset proves too small such as where Bitcoin clients were downloaded and the IP address of the first block to verify a transaction, which according to several studies listed by the authors is much more likely to be in the same country as the user that made the transaction. Both of these could be used as alternative measures of adoption at the country level.
+
+## Proxy Strength
+
+The data is limited and not complete, therefore it will be essential to use techniques to deal with this. The methods learned in the course "Data Quality" and "Collection, Integration and Preprocessing" will be key here.
+
+Secondly, a number of the data measurements are not ideal proxies for what the literature review indicates. These are the proxy for Sins and Capital Controls. While there are other proxies available, for the reasons outlined in the section [Predictors: Independent and Control Variables], these are the best available choices given the limitations of data in this field.
+
+# Formal Requirements
+
+## Technology / Software / Application
+
+**Statistical Programming:** The analysis and majority of results presentation will happen in R Studio and R markdown respectively.
+
+**Repository:** The project will be saved and backed up and prepared for publishing on GitHub.
+
+**LLM / GenAI**: The use of AI will be disclosed in a statement at the end of the thesis with the major uses in the project. At this point a key use can already be hinted at. The "filling out" of an empty table using an API leading to a large language model, may also become relevant if the research reveals extra features to be neccesary. This can be done automatically using custom functions and loops. However as it is not required at the current state, it will not be further discussed.
+
+## Annotated Disposition
+
+[**Abstract**]{.underline}
+
+Provide a roughly 200 word summary of the paper.
+
+[**Introduction**]{.underline}
+
+**Context and Motivation:** Introduce Bitcoin's rise as an alternative currency, particularly in economically unstable regions. Explain why understanding Bitcoin adoption is important in the context of currency substitution.
+
+**Problem Statement:** Highlight the research gap, specifically the lack of models that combine predictors from currency substitution literature to explain Bitcoin adoption.
+
+**Research Question and Objectives:** State the central research question: "Do the predictors of currency substitution improve the model of Bitcoin adoption?"
+
+**Structure of the Paper:** Provide a brief overview of the paper's sections.
+
+[**Literature Review**]{.underline}
+
+**Currency Substitution Theories:** Discuss classical economic literature on currency substitution, focusing on inflation, exchange rate volatility, technology, and sovereign default risk.
+
+**Bitcoin Adoption:** Review the current academic research on Bitcoin adoption. Discuss relevant factors such as inflation hedging, investment, remittances, capital controls, and illicit uses.
+
+**Synthesis of Literature:** Draw parallels between currency substitution and Bitcoin adoption. Identify the gap in existing literature that does not comprehensively link these two phenomena.
+
+[**Hypothesis**]{.underline}
+
+State the primary hypothesis: Currency substitution predictors (e.g., currency stability, sovereign default risk) will significantly (at the chosen sig. level) improve models predicting Bitcoin adoption.
+
+[**Data**]{.underline}
+
+**Data Sources**
+
+**Dependent Variable:** Describe Bitcoin adoption data using Google Trends as a proxy.
+
+**Independent Variable:** Explain economic indicators selected and why they can be used as proxies.
+
+**Data Cleaning:** Describe methods used to clean and deal with missings.
+
+[**Methodology**]{.underline}
+
+**Model Specifications:** Explain models used, making a clear distinction between supervised models and unsupervised clustering used to assign countries to groups.
+
+[**Results**]{.underline}
+
+**Exploratory Data Analysis:** Explore the data structure.
+
+**Descriptive Statistics:** Summary of the dataset, including descriptive statistics for Bitcoin adoption and the independent variables. Necessary transformations will also be made at this point if required to meet assumptions of specific models.
+
+**Inferential Statistics:** Show results of supervised learning models to predict Bitcoin adoption.
+
+**Clustering Analysis:** Present the clustering results and discuss the profiles of countries based on Bitcoin adoption patterns.
+
+**Potential Robustness Checks:** Need to discuss what would be appropriate.
+
+[**Discussion**]{.underline}
+
+**Interpretation:** Analyze the implications of the findings in the context of the literature. Discuss whether the results align with or challenge existing theories on currency substitution and Bitcoin adoption.
+
+**Policy / Business / Individual Implications:** Discuss the implications of the study for policymakers, particularly regarding monetary policies, capital controls, and the potential for Bitcoin to be used as a hedge against failing local currencies. Individual and Business impacts will also be tied in here.
+
+**Limitations:** Acknowledge any limitations such as data quality, sample size, or the difficulty of using Google Trends as a proxy for Bitcoin adoption.
+
+**Contribution to Literature:** Summarize the study's contribution to the academic fields of currency substitution and Bitcoin adoption.
+
+**Future Research:** Discuss what, if any, future avenues of research have been opened up by the findings.
+
+[**Conclusion**]{.underline}
+
+**Key Findings:** Recap the major findings of the study and their significance for understanding Bitcoin adoption in the context of currency substitution.
+
+[**References**]{.underline}
+
+Provide APA 7th style citations, common in social science research.
+
+[**Appendix**]{.underline}
+
+Move any cumbersome or not directly relevant information, graphs & figures here.
+
+\newpage
+
+## Work and Research Plan
+
+The iterative data science approach is followed, allowing for flexibility and responding to different directions that the research may take depending on intermittent results. Figure \@ref(fig:plan) shows the plan I aim to take. The work is supposed to start on 04.11.2024 and the milestones are in such a way that other academic, professional and personal commitments can still be met.
+
+```{=tex}
+\begin{figure}[H]
+
+\centering
+
+\includegraphics[width=\textwidth]{plan.png}
+
+\caption{Overview Work Plan}
+
+\label{fig:plan}
+
+\end{figure}
+```
+\newpage
+
+# Bibliography (APA 7\textsuperscript{th})
+
+::: {#refs}
+:::
+
+\newpage
+
+# Appendix 1: AI Disclosure
+
+I made extensive use of AI, particularly ChatGPT for this project. The main, but not exhaustive uses were the following:
+
+-   Spelling / Reviewing and writing drafts of sections where I needed inspiration to get started.
+
+-   R Studio, Markdown and LaTex issues and code suggestions.
+
+-   Scanning Long Documents for parts that I needed.
+
+-   Methodology "Research", although I verified everything using proper academic sources.
+
+-   Cover Page: Used Canva's AI Image Generation to create the cover photo.

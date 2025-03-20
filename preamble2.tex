@@ -1,0 +1,85 @@
+\usepackage{tocloft}
+\renewcommand{\cftsecfont}{\large}
+\renewcommand{\cftsubsecfont}{\normalsize}
+\renewcommand{\cftsecpagefont}{\normalsize}
+\renewcommand{\cftsubsecpagefont}{\normalsize}
+\setlength{\cftbeforesecskip}{0pt}
+\setlength{\cftbeforesubsecskip}{0pt}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{4}
+\usepackage{titling}
+\setlength{\droptitle}{-3em}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{1em}
+\setlength{\cftbeforetoctitleskip}{-2em}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{float}
+\usepackage{placeins}
+\usepackage{setspace}
+\setstretch{1.5}
+
+% 1️⃣ Title Page: No numbering (COMPLETELY HIDDEN)
+\pagenumbering{gobble}  % Disable page numbering completely
+\pagestyle{empty}  % No header or footer
+\thispagestyle{empty}  % Ensure this page stays empty
+
+% 2️⃣ Roman numeral pages (Abstract, TOC, List of Figures/Tables)
+\newpage
+\pagenumbering{roman}  % Start Roman numerals
+\fancypagestyle{roman}{
+  \fancyhf{}  % Clear all headers and footers
+  \renewcommand{\headrulewidth}{0pt}  % No header line
+  \fancyfoot[C]{\thepage}  % ONLY show the page number (ii, iii, iv)
+}
+\pagestyle{roman}  % Apply to all Roman numeral pages
+\thispagestyle{roman}  % Ensure it applies immediately
+
+% 🔹 Ensure TOC, List of Figures/Tables KEEP the correct Roman numeral format
+\renewcommand{\tableofcontents}{
+  \newpage
+  \pagenumbering{roman} % Ensure Roman numerals
+  \pagestyle{roman} % Keep TOC in Roman style
+  \thispagestyle{roman} % Apply immediately
+  \begingroup
+  \let\cleardoublepage\clearpage % Prevent unwanted blank pages
+  \toccontents
+  \endgroup
+}
+
+\renewcommand{\listoffigures}{
+  \newpage
+  \pagenumbering{roman} % Ensure Roman numerals
+  \pagestyle{roman} % Keep style consistent across pages
+  \thispagestyle{roman} % Apply immediately
+  \begingroup
+  \let\cleardoublepage\clearpage % Prevent unwanted blank pages
+  \lofcontents
+  \endgroup
+}
+
+\renewcommand{\listoftables}{
+  \newpage
+  \pagenumbering{roman} % Ensure Roman numerals
+  \pagestyle{roman} % Keep style consistent across pages
+  \thispagestyle{roman} % Apply immediately
+  \begingroup
+  \let\cleardoublepage\clearpage % Prevent unwanted blank pages
+  \lotcontents
+  \endgroup
+}
+
+% 3️⃣ Arabic numeral pages (Main content starts here)
+\newpage
+\pagenumbering{arabic}  % Start Arabic numbering
+\pagestyle{plain} % Reset to simple style before applying fancy
+\thispagestyle{plain} % Apply immediately
+
+% Apply "Page X of Y" format for Arabic pages
+\fancypagestyle{arabic}{
+  \fancyhf{}  % Clear headers/footers
+  \renewcommand{\headrulewidth}{0pt}  % No header
+  \fancyfoot[C]{Page \thepage\ of \pageref{LastPage}} % Show "Page X of Y"
+}
+\pagestyle{arabic} % Apply globally for main content
+\thispagestyle{arabic} % Ensure it applies immediately on the first Arabic page

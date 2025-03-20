@@ -1,0 +1,670 @@
+
+@article{calvo2002,
+	title = {On dollarization},
+	author = {Calvo, Guillermo A.},
+	year = {2002},
+	month = {07},
+	date = {2002-07},
+	journal = {Economics of Transition},
+	pages = {393--403},
+	volume = {10},
+	number = {2},
+	doi = {10.1111/1468-0351.00117},
+	url = {https://onlinelibrary.wiley.com/doi/10.1111/1468-0351.00117},
+	langid = {en}
+}
+
+@article{vieira2012,
+	title = {Financial dollarization and systemic risks: New empirical evidence},
+	author = {Vieira, {FabrC-cio A.C.} and Holland, {MC!rcio} and Resende, Marco F.},
+	year = {2012},
+	month = {10},
+	date = {2012-10},
+	journal = {Journal of International Money and Finance},
+	pages = {1695--1714},
+	volume = {31},
+	number = {6},
+	doi = {10.1016/j.jimonfin.2012.03.007},
+	url = {https://linkinghub.elsevier.com/retrieve/pii/S0261560612000721},
+	langid = {en}
+}
+
+@techreport{rennhack2006,
+	title = {Financial Dollarization in Latin America},
+	author = {Rennhack, Robert and Nozaki, Masahiro},
+	year = {2006},
+	date = {2006}
+}
+
+@techreport{kokenyne2010,
+	title = {Dedollarization},
+	author = {Kokenyne, Annamaria and Ley, Jeremy and Veyrune, Romain},
+	year = {2010},
+	date = {2010}
+	}
+
+@article{honig2009,
+	title = {Dollarization, Exchange Rate Regimes and Government Quality},
+	author = {Honig, Adam},
+	year = {2009},
+	date = {2009},
+	journal = {Journal of International Money and Finance},
+	pages = {198--214},
+	volume = {28},
+	number = {2},
+	url = {https://ssrn.com/abstract=305497}
+}
+
+@article{tasseven2015,
+	title = {Currency Substitution in Turkey: Macroeconomic Determinants},
+	author = {{Ta{\c{s}}seven}, {Czlem} and Fitzsimmons, Adrian P. and Elifoglu, I. Hilmi},
+	year = {2015},
+	date = {2015},
+	journal = {Journal of Emerging Markets},
+	pages = {52--68},
+	volume = {20},
+	number = {1-2},
+	url = {https://www.researchgate.net/profile/Eduardo-Goncalves-24/publication/272747279_APPRAISING_TECHNOLOGY_INNOVATION_A_METHODOLOGICAL_PROPOSAL/links/571e5cb208aed056fa226d10/APPRAISING-TECHNOLOGY-INNOVATION-A-METHODOLOGICAL-PROPOSAL.pdf#page=29}
+}
+
+@techreport{levy2021,
+	title = {Financial dollarization and de-dollarization in the new millennium},
+	author = {Levy, Eduardo},
+	year = {2021},
+	date = {2021},
+	langid = {en}
+}
+
+@article{sims2001,
+	title = {Fiscal Consequences for Mexico of Adopting the Dollar},
+	author = {Sims, Christopher A.},
+	year = {2001},
+	month = {05},
+	date = {2001-05},
+	journal = {Journal of Money, Credit and Banking},
+	pages = {597},
+	volume = {33},
+	number = {2},
+	doi = {10.2307/2673918},
+	url = {https://www.jstor.org/stable/2673918?origin=crossref},
+	langid = {en}
+}
+
+@techreport{berg2000,
+	title = {The Dollarization Debate},
+	author = {Berg, Andrew and Borensztein, Eduardo},
+	year = {2000},
+	date = {2000}
+}
+
+@article{conlon2021,
+	title = {Inflation and cryptocurrencies revisited: A time-scale analysis},
+	author = {Conlon, Thomas and Corbet, Shaen and McGee, Richard J.},
+	year = {2021},
+	month = {09},
+	date = {2021-09},
+	journal = {Economics Letters},
+	pages = {109996},
+	volume = {206},
+	doi = {10.1016/j.econlet.2021.109996},
+	url = {https://linkinghub.elsevier.com/retrieve/pii/S0165176521002731},
+	langid = {en}
+}
+
+@article{choi2022,
+	title = {Bitcoin: An inflation hedge but not a safe haven},
+	author = {Choi, Sangyup and Shin, Junhyeok},
+	year = {2022},
+	month = {05},
+	date = {2022-05},
+	journal = {Finance Research Letters},
+	pages = {102379},
+	volume = {46},
+	doi = {10.1016/j.frl.2021.102379},
+	url = {https://linkinghub.elsevier.com/retrieve/pii/S1544612321003810},
+	langid = {en}
+}
+
+@article{basher2022,
+	title = {Forecasting Bitcoin price direction with random forests: How important are interest rates, inflation, and market volatility?},
+	author = {Basher, Syed Abul and Sadorsky, Perry},
+	year = {2022},
+	month = {09},
+	date = {2022-09},
+	journal = {Machine Learning with Applications},
+	pages = {100355},
+	volume = {9},
+	doi = {10.1016/j.mlwa.2022.100355},
+	url = {https://linkinghub.elsevier.com/retrieve/pii/S266682702200055X},
+	langid = {en}
+}
+
+@article{smales2024,
+	title = {Cryptocurrency as an alternative inflation hedge?},
+	author = {Smales, L. A.},
+	year = {2024},
+	month = {06},
+	date = {2024-06},
+	journal = {Accounting & Finance},
+	pages = {1589--1611},
+	volume = {64},
+	number = {2},
+	doi = {10.1111/acfi.13193},
+	url = {https://onlinelibrary.wiley.com/doi/10.1111/acfi.13193},
+	langid = {en}
+}
+
+@article{gaies2024,
+	title = {On the resilience of cryptocurrencies: A quantile-frequency analysis of bitcoin and ethereum reactions in times of inflation and financial instability},
+	author = {Gaies, Brahim and {ChaC"bane}, Najeh and Arfaoui, Nadia and Sahut, Jean-Michel},
+	year = {2024},
+	month = {06},
+	date = {2024-06},
+	journal = {Research in International Business and Finance},
+	pages = {102302},
+	volume = {70},
+	doi = {10.1016/j.ribaf.2024.102302},
+	url = {https://linkinghub.elsevier.com/retrieve/pii/S0275531924000953},
+	langid = {en}
+}
+
+@article{phochanachan2022,
+	title = {Do Bitcoin and Traditional Financial Assets Act as an Inflation Hedge during Stable and Turbulent Markets? Evidence from High Cryptocurrency Adoption Countries},
+	author = {Phochanachan, Panisara and Pirabun, Nootchanat and Leurcharusmee, Supanika and Yamaka, Woraphon},
+	year = {2022},
+	month = {07},
+	date = {2022-07-14},
+	journal = {Axioms},
+	pages = {339},
+	volume = {11},
+	number = {7},
+	doi = {10.3390/axioms11070339},
+	url = {https://www.mdpi.com/2075-1680/11/7/339},
+	langid = {en}
+}
+
+@article{taskinsoy,
+	title = {Bitcoin and Turkey: A Good Match or a perfect Storm?},
+	author = {Taskinsoy, John},
+	year = {2019},
+	url = {http://dx.doi.org/10.2139/ssrn.3477849}
+}
+
+@article{parino,
+	title = {Analysis of the Bitcoin blockchain: Socio-economic factors behind the adoption},
+	author = {Parino, Francesco and Beiro, Mariano G. and Gauvin, Laetitia},
+	year = {2018},
+	langid = {en}
+}
+
+@article{ricci2020,
+	title = {How economic freedom reflects on the Bitcoin transaction network},
+	author = {Ricci, Piergiorgio},
+	year = {2020},
+	month = {03},
+	date = {2020-03},
+	journal = {Journal of Industrial and Business Economics},
+	pages = {133--161},
+	volume = {47},
+	number = {1},
+	doi = {10.1007/s40812-019-00143-9},
+	url = {http://link.springer.com/10.1007/s40812-019-00143-9},
+	langid = {en}
+}
+
+@inbook{voskobojnikov2020,
+	title = {Surviving the Cryptojungle: Perception and Management of Risk Among North American Cryptocurrency (Non)Users},
+	author = {Voskobojnikov, Artemij and Obada-Obieh, Borke and Huang, Yue and Beznosov, Konstantin},
+	editor = {Bonneau, Joseph and Heninger, Nadia},
+	year = {2020},
+	date = {2020},
+	publisher = {Springer International Publishing},
+	pages = {595--614},
+	volume = {12059},
+	url = {http://link.springer.com/10.1007/978-3-030-51280-4_32},
+	note = {Series Title: Lecture Notes in Computer Science
+DOI: 10.1007/978-3-030-51280-4{\_}32},
+	address = {Cham},
+	langid = {en}
+}
+
+@inproceedings{glaser2014,
+	title = {Twenty Second European Confrence on Information Systems},
+	author = {Glaser, Florian and Zimmermann, Kai and Haferkorn, Martin and Weber, Moritz and Siering, Michael},
+	year = {2014},
+	date = {2014},
+	address = {Tel Aviv}
+}
+
+@article{lammer2019,
+	title = {Who Are the Bitcoin Investors? Evidence from Indirect Cryptocurrency Investments},
+	author = {Lammer, Dominique and Hanspal, Tobin and Hackethal, Andreas},
+	year = {2019},
+	date = {2019},
+	journal = {SSRN Electronic Journal},
+	doi = {10.2139/ssrn.3501549},
+	url = {https://www.ssrn.com/abstract=3501549},
+	langid = {en}
+}
+
+@techreport{saurabh2017,
+	title = {Primer on Bitcoin},
+	author = {Saurabh, Roy},
+	year = {2017},
+	date = {2017},
+	url = {https://pahleindia.org/wp-content/uploads/2022/12/Primer-on-Bitcoin.pdf},
+	address = {India}
+}
+
+@article{sarvi2020,
+	title = {Identification and ranking of the most suitable virtual currencies for selling crude oil under sanctions},
+	author = {Sarvi, Sina},
+	year = {2020},
+	date = {2020},
+	journal = {P etroleum},
+	volume = {4},
+	number = {1},
+	langid = {en}
+}
+
+@article{macfarlane2021,
+	title = {Strengthening Sanctions: Solutions to Curtail the Evasion of International Economic Sanctions Through the Use of Cryptocurrency},
+	author = {Macfarlane, Emma},
+	year = {2021},
+	date = {2021},
+	journal = {Michigan Journal of International Law},
+	pages = {199},
+	volume = {42},
+	doi = {10.36642/mjil.42.1.strengthening},
+	url = {https://repository.law.umich.edu/mjil/vol42/iss1/6/},
+	langid = {en}
+}
+
+@article{folkinshteyn2015,
+	title = {The Bitcoin Mirage: An Oasis of Financial Remittance},
+	author = {Folkinshteyn, Daniel and Lennon, Mark and Reilly, Tim},
+	year = {2015},
+	date = {2015},
+	number = {2},
+	langid = {en}
+}
+
+@techreport{ruehmann2020,
+	title = {Can blockchain technology reduce the cost of remittances?},
+	author = {{Rühmann}, Friederike and Konda, Sai Aashirvad and Horrocks, Paul and Taka, Nina},
+	year = {2020},
+	date = {2020},
+	langid = {en}
+}
+
+@article{dyhrberg2018,
+	title = {How investible is Bitcoin? Analyzing the liquidity and transaction costs of Bitcoin markets},
+	author = {Dyhrberg, Anne H. and Foley, Sean and Svec, Jiri},
+	year = {2018},
+	month = {10},
+	date = {2018-10},
+	journal = {Economics Letters},
+	pages = {140--143},
+	volume = {171},
+	doi = {10.1016/j.econlet.2018.07.032},
+	url = {https://linkinghub.elsevier.com/retrieve/pii/S0165176518302921},
+	langid = {en}
+}
+
+@article{bbc2021,
+	title = {Bitcoin: El Salvador makes cryptocurrency legal tender},
+	author = {BBC, },
+	year = {2021},
+	date = {2021},
+	journal = {BBC},
+	url = {https://www.bbc.com/news/world-latin-america-57398274}
+}
+
+@article{carlson2016,
+	title = {Cryptocurrency and Capital Controls},
+	author = {Carlson, Jill},
+	year = {2016},
+	date = {2016},
+	journal = {SSRN}
+}
+
+@article{viglione2015,
+	title = {Does Governance Have a Role in Pricing? Cross-Country Evidence from Bitcoin Markets},
+	author = {Viglione, Robert},
+	year = {2015},
+	date = {2015},
+	journal = {SSRN},
+	url = {https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2666243}
+}
+
+@article{orastean2024,
+	title = {Exploring the Relationship Between Google Trends and Cryptocurrency Metrics},
+	author = {{Or{\u{a}}{\c{s}}tean}, Ramona and {M{\u{a}}rginean}, Silvia Cristina and Sava, Raluca},
+	year = {2024},
+	month = {04},
+	date = {2024-04-01},
+	journal = {Studies in Business and Economics},
+	pages = {368--379},
+	volume = {19},
+	number = {1},
+	doi = {10.2478/sbe-2024-0020},
+	url = {https://www.sciendo.com/article/10.2478/sbe-2024-0020},
+	langid = {en}
+}
+
+@article{stolarski2020,
+	title = {Cryptocurrencies Perception Using Wikipedia and Google Trends},
+	author = {Stolarski, Piotr and Lewoniewski, {W{\l}odzimierz} and Abramowicz, Witold},
+	year = {2020},
+	month = {04},
+	date = {2020-04-24},
+	journal = {Information},
+	pages = {234},
+	volume = {11},
+	number = {4},
+	doi = {10.3390/info11040234},
+	url = {https://www.mdpi.com/2078-2489/11/4/234},
+	langid = {en}
+}
+
+@article{du2024,
+	title = {Country Culture and Bitcoin Early Adoption},
+	author = {Du, Wei and Jia, Z. Tingting and Zhu, },
+	year = {2024},
+	date = {2024},
+	journal = {SSRN},
+	url = {https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4920251},
+	langid = {en}
+}
+
+@article{hu2021,
+	title = {Evading Capital Controls via Cryptocurrencies: Evidence from the Blockchain},
+	author = {Hu, Maggie and Lee, Adrian D. and Putnins, Talis J.},
+	year = {2021},
+	date = {2021},
+	journal = {SSRN Electronic Journal},
+	doi = {10.2139/ssrn.3956933},
+	url = {https://www.ssrn.com/abstract=3956933},
+	langid = {en}
+}
+
+@techreport{chainalysis2020,
+	title = {The 2020 Global Crypto Adopption Index: Cryptocurrency is a Global Phenomenon},
+	author = {Chainalysis, },
+	year = {2020},
+	date = {2020},
+	url = {https://blog.chainalysis.com/reports/2020-global-cryptocurrency-adoption-index-2020}
+}
+
+@misc{worldbank2024_GDP,
+	title = {GDP per capita (current US{\$})},
+	author = {World Bank, },
+	year = {2024},
+	date = {2024},
+	url = {https://data.worldbank.org/indicator/NY.GDP.PCAP.CD}
+}
+
+@misc{worldbank2024_Savings,
+	title = {Gross domestic savings ({\%} of GDP)},
+	author = {World Bank, },
+	year = {2024},
+	date = {2024},
+	url = {https://data.worldbank.org/indicator/NY.GDS.TOTL.ZS}
+}
+
+@misc{worldbank2024_RemittReceived,
+	title = {Personal remittances, received ({\%} of GDP)},
+	author = {World Bank, },
+	year = {2024},
+	date = {2024},
+	url = {https://data.worldbank.org/indicator/BX.TRF.PWKR.DT.GD.ZS}
+}
+
+@misc{worldbank2024_Inflation,
+	title = {Inflation, consumer prices (annual {\%})},
+	author = {World Bank, },
+	year = {2024},
+	date = {2024},
+	url = {https://data.worldbank.org/indicator/FP.CPI.TOTL.ZG}
+}
+
+@misc{worldbank2024_MobileSub,
+	title = {Mobile cellular subscriptions (per 100 people)},
+	author = {World Bank, },
+	year = {2024},
+	date = {2024},
+	url = {https://data.worldbank.org/indicator/IT.CEL.SETS.P2}
+}
+
+
+@misc{focuseconomics2024,
+	title = {External Debt (% of GDP)},
+	author = {Focus Economics, },
+	year = {2024},
+	month = {09},
+	date = {2024-09-02},
+	url = {https://www.focus-economics.com/economic-indicator/external-debt/},
+	langid = {canadian}
+}
+
+@article{stix2011,
+	title = {Euroization: what factors drive its persistence? Household data evidence for Croatia, Slovenia and Slovakia},
+	author = {Stix, Helmut},
+	year = {2011},
+	date = {2011},
+	journal = {Applied Economics},
+	pages = {2689--2704},
+	volume = {43},
+	number = {21},
+	doi = {https://doi.org/10.1080/00036840903357413}
+}
+
+@article{ju,
+	title = {The Relationship Between Currency Substitution and Exchange Rate Volatility},
+	author = {Ju, Jewon},
+	year = {2020},
+	journal = {University of California at Berkley, Department of Economics},
+	doi = {https://econ.berkeley.edu/sites/default/files/ECON_H195B_Thesis%20(8).pdf},
+	langid = {en}
+}
+
+@article{ajibola2021,
+	title = {Currency Substitution and Exchange Rate Volatility in Nigeria: An Autoregressive Distributed Lag Approach},
+	author = {Ajibola, Isaiah O. and Udoette, Sylvanus U. and Muhammad, Rabia U. and Anigwe, John O.},
+	year = {2021},
+	month = {04},
+	date = {2021-04-08},
+	journal = {Central Bank of Nigeria Journal of Applied Statistics},
+	pages = {1--28},
+	volume = {11},
+	number = {2},
+	doi = {10.33429/Cjas.11220.1/8},
+	url = {https://www.cbn.gov.ng/Out/2021/STD/1-28.pdf},
+	langid = {en}
+}
+
+@article{guidotti1993,
+	title = {Currency Substitution and Financial Innovation},
+	author = {Guidotti, Pablo E},
+	year = {1993},
+	date = {1993},
+	journal = {Journal of Money, Credit and Banking},
+	pages = {109--124},
+	volume = {25},
+	number = {1},
+	url = {https://www.jstor.org/stable/pdf/2077823.pdf},
+	langid = {en}
+}
+
+@article{ujunwa2021,
+	title = {Extending the determinants of currency substitution in Nigeria: Any role for financial innovation?},
+	author = {Ujunwa, Angela Ifeanyi and Ujunwa, Augustine and Onah, Emmanuel and Nwonye, Nnenna Georgina and Chukwunwike, Onyedikachi David},
+	year = {2021},
+	month = {12},
+	date = {2021-12},
+	journal = {South African Journal of Economics},
+	pages = {1--18},
+	number = {4},
+	doi = {10.1111/saje.12300},
+	url = {https://onlinelibrary.wiley.com/doi/10.1111/saje.12300},
+	langid = {en}
+}
+
+@misc{worldbank2024,
+	title = {Gross domestic savings (% of GDP)},
+	author = {World Bank, },
+	year = {2024},
+	date = {2024},
+	url = {https://data.worldbank.org/indicator/NY.GDS.TOTL.ZS}
+}
+
+@article{marmora2021,
+	title = {Currency substitution in the shadow economy: International panel evidence using local Bitcoin trade volume},
+	author = {Marmora, Paul},
+	year = {2021},
+	month = {08},
+	date = {2021-08},
+	journal = {Economics Letters},
+	pages = {109926},
+	volume = {205},
+	doi = {10.1016/j.econlet.2021.109926},
+	url = {https://linkinghub.elsevier.com/retrieve/pii/S0165176521002032},
+	langid = {en}
+}
+
+
+
+@misc{statista_adoption,
+	title = {Crypto ownership by country 2019-2024},
+	author = {Statista, },
+	year = {2024},
+	url = {https://www.statista.com/statistics/1202468/global-cryptocurrency-ownership/},
+	langid = {en}
+}
+
+@misc{statista_btc_share,
+	title = {Dominance of Bitcoin and other crypto in the overall market from 2nd quarter of 2013 to 2nd quarter of 2024},
+	author = {Statista, },
+	year = {2024},
+	url = {https://www.statista.com/statistics/730782/cryptocurrencies-market-capitalization/},
+	langid = {en}
+}
+
+@article{fernandez2016,
+	title = {Capital Control Measures: A New Dataset},
+	author = {Fernandez, Andres and Klein, Michael and Rebucci, Alessandro and Schindler, Martin and Uribe, Martin},
+	year = {2016},
+	date = {2016},
+	journal = {IMF Economic Review},
+	pages = {548--574},
+	volume = {64},
+	url = {https://www.columbia.edu/~mu2166/fkrsu/}
+}
+
+@misc{u.s.departmentofthetreasury2022,
+	title = {Treasury Sanctions Over 40 Individuals and Entities Across Nine Countries Connected to Corruption and Human Rights Abuse},
+	author = {U.S. Department of the Treasury, },
+	year = {2022},
+	month = {12},
+	date = {2022-12-09},
+	url = {https://home.treasury.gov/news/press-releases/jy1155},
+	langid = {en}
+}
+
+@misc{spearman,
+	title = {Spearman{\textquoteright}s correlation},
+	author = {, Statstutor UK},
+	url = {https://www.statstutor.ac.uk/resources/uploaded/spearmans.pdf}
+}
+
+@misc{heiss2021,
+	title = {A guide to working with country-year panel data and Bayesian multilevel models},
+	author = {Heiss, Andrew},
+	year = {2021},
+	date = {2021},
+	url = {https://www.andrewheiss.com/blog/2021/12/01/multilevel-models-panel-data-guide/}
+}
+
+@book{dougherty2011,
+	title = {Introduction to Econometrics},
+	author = {Dougherty, Christopher},
+	year = {2011},
+	date = {2011},
+	publisher = {Oxford University Press},
+	edition = {4th ed},
+	note = {OCLC: ocn653082405},
+	address = {Oxford},
+	langid = {en}
+}
+
+@misc{amin2024,
+	title = {Research Guides: Panel Data Using Stata: Fixed Effects and Random Effects},
+	author = {Amin, Muhammad Al and Qin, Yufei},
+	year = {2024},
+	date = {2024},
+	url = {https://libguides.princeton.edu/c.php?g=1259303&p=9229770},
+	langid = {en}
+}
+
+@article{imf2024,
+	title = {IMF AREAER Database},
+	author = {{IMF}},
+	year = {2024},
+	date = {2024},
+	url = {https://www.elibrary-areaer.imf.org/Pages/ChapterQuery.aspx}
+}
+
+@article{ammous2018,
+	title = {Can cryptocurrencies fulfil the functions of money?},
+	author = {Ammous, Saifedean},
+	year = {2018},
+	month = {11},
+	date = {2018-11},
+	journal = {The Quarterly Review of Economics and Finance},
+	pages = {38--51},
+	volume = {70},
+	doi = {10.1016/j.qref.2018.05.010},
+	url = {https://linkinghub.elsevier.com/retrieve/pii/S1062976917300777},
+	langid = {en}
+}
+
+@article{politica2024,
+	title = {Political Corruption Index},
+	author = {{V-Dem}},
+	year = {2024},
+	date = {2024},
+	url = {https://ourworldindata.org/grapher/political-corruption-index?tab=chart}
+}
+
+@article{buscaglia2003,
+  title = {Controlling Organized Crime and Corruption in the Public Sector},
+  author = {Buscaglia, Edgardo and van Dijk, Jan},
+  year = {2003},
+  journal = {Forum on Crime and Society},
+  volume = {3},
+  url = {https://www.unodc.org/pdf/crime/forum/forum3_Art1.pdf},
+  langid = {en}
+}
+
+@techreport{centerforthestudyofdemocracy2010,
+  title = {Examining the links between organised crime and corruption},
+  author = {Center for the Study of Democracy},
+  year = {2010},
+  month = {12},
+  url = {http://link.springer.com/10.1007/s12117-010-9113-x},
+  langid = {en}
+}
+
+@article{mazzitelli2007,
+  title = {Transnational Organized Crime in West Africa: The Additional Challenge},
+  author = {Mazzitelli, Antonio L.},
+  year = {2007},
+  month = {11},
+  journal = {International Affairs},
+  pages = {1071--1090},
+  volume = {83},
+  number = {6},
+  doi = {10.1111/j.1468-2346.2007.00674.x},
+  url = {https://academic.oup.com/ia/article-lookup/doi/10.1111/j.1468-2346.2007.00674.x},
+  langid = {en}
+}

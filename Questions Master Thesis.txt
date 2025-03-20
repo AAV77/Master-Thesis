@@ -1,0 +1,15 @@
+Questions Master Thesis:
+
+Formal Req:
+- Was my citation style in the preliminary study appropriate? The formal guide mentions page numbers should be included but for APA this is only done in quotes.
+- A list of online sources? Citing websites in APA is not enough?
+- A list of data sources? Again citing them in APA is not enough?
+- all statstistal evaluation in the appendix, submitted seperatley? results section?
+- literature?? 
+- printed version? 
+
+
+Content Wise:
+- 4 models ok? (lin reg, lin reg transformed, fixed (assumptions issue), random effects)
+- transoformations (log, scaling, yeo-johnson, how does the interpretation change)
+- cross validation?

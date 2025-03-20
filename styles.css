@@ -1,0 +1,13 @@
+/* Reduce the font size of the TOC */
+.toc {
+  font-size: 0.8em;  /* Adjust the size as necessary */
+}
+
+/* Optionally reduce the font size of the TOC headers */
+.toc ul {
+  font-size: 0.9em;  /* Adjust as needed */
+}
+/* Set document font size to 11.5pt */
+body {
+  font-size: 22pt;
+}

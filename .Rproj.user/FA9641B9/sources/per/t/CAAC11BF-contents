@@ -1,0 +1,26 @@
+---
+title: "Opting Out: Bitcoin as Currency Substitution?"
+subtitle: "Preliminary Study"
+author:
+  - "Alec Vayloyan, MSc Student Applied Information and Data Science"
+  - "Supervisors: Dr. Denis Bieri (main), Dr. Thomas Ankenbrand (co-supervisor)"
+date: "Submission for 25.10.2024"
+output:
+  pdf_document:
+    toc: no
+    toc_depth: 3
+    number_sections: true
+header-includes:
+  - \pagenumbering{gobble}  # This hides the page numbers    
+---
+
+\centering
+\includegraphics[width=5.1in]{cover.png}
+
+\vspace{1.4cm}
+
+\begin{flushleft}
+
+\includegraphics[width=2.5in]{hslu_logo.png}
+
+\end{flushleft}

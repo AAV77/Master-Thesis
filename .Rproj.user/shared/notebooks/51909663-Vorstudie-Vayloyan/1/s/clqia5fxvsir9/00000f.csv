@@ -1,0 +1,51 @@
+"0","library(dplyr)"
+"2","
+Attaching package: ‘dplyr’
+
+"
+"2","The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+"
+"2","The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+"
+"0","library(rvest)"
+"0","library(xml2)"
+"0","library(httr)     # OpenAI Access"
+"0","library(jsonlite) # OpenAI Access"
+"0","library(mice)     # Evaluating Missings"
+"2","
+Attaching package: ‘mice’
+
+"
+"2","The following object is masked from ‘package:stats’:
+
+    filter
+
+"
+"2","The following objects are masked from ‘package:base’:
+
+    cbind, rbind
+
+"
+"0","library(tidyr)"
+"0","library(tibble)"
+"0","library(openxlsx)"
+"0","library(kableExtra)"
+"2","
+Attaching package: ‘kableExtra’
+
+"
+"2","The following object is masked from ‘package:dplyr’:
+
+    group_rows
+
+"
+"0","library(knitr)"
+"0","library(bookdown)"
+"0","library(openxlsx)"
+"0","library(ggplot2)"

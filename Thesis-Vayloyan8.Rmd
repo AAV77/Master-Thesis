@@ -1,0 +1,1864 @@
+---
+output:
+  bookdown::pdf_document2:
+    toc: no
+    toc_depth: 3
+    number_sections: yes
+  pdf_document:
+    toc: yes
+    toc_depth: 3
+    number_sections: yes
+  bookdown::html_document2:
+    toc: yes
+    toc_depth: 3
+  '': default
+header-includes:
+  - \input{preamble2.tex}
+bibliography: references.bib
+csl: apa.csl
+link-citations: yes
+nocite: |
+  @worldbank2024_GDP, @worldbank2024, @worldbank2024_Inflation, @worldbank2024_RemittReceived, @focuseconomics2024, @imf2024, @statistaCryptoMarketCap
+cache: yes
+---
+
+```{=tex}
+\pagenumbering{gobble} % Completely disable numbering on title page
+\thispagestyle{empty} % Ensure first page has no header/footer
+\centering
+\LARGE
+```
+\textbf{Opting Out: Cryptocurrency Under Consideration of Currency Substitution}
+
+\large
+
+Master Thesis
+
+\large
+
+Alec Vayloyan, MSc Student Applied Information and Data Science
+
+\large
+
+Submission for 16.05.2025
+
+\includegraphics[width=3in]{cover.png} \large
+
+Supervisor: Dr. Denis Bieri ([denis.bieri\@hslu.ch](mailto:denis.bieri@hslu.ch){.email})
+
+Co-Supervisor: Dr. Thomas Ankenbrand ([thomas.ankenbrand\@hslu.ch](mailto:thomas.ankenbrand@hslu.ch){.email})
+
+E-Mail Author: [vayloyanalec49\@gmail.com](mailto:vayloyanalec49@gmail.com){.email}
+
+Thesis submitted in partial requirement for a Master's degree in Applied Information and Data Science at the Lucerne University of Applied Sciences
+
+Spring Semester 2025 \vspace{2cm}
+
+```{=tex}
+\begin{flushleft}
+
+\includegraphics[width=2.5in]{hslu_logo.png}
+
+\end{flushleft}
+\pagenumbering{roman}
+\pagestyle{roman}
+\newpage
+```
+\LARGE
+
+```{=tex}
+\begin{center}
+
+\Large
+
+\textbf{Abstract}
+
+\end{center}
+```
+\normalsize
+
+We analyze the drivers behind this shift, including trust in traditional banking, regulatory landscapes, and the increasing adoption of blockchain technology. Using a combination of quantitative data analysis and qualitative insights, we examine whether Bitcoin and other cryptocurrencies serve as viable alternatives to government-issued money. The study also investigates the risks associated with cryptocurrency-based economies, including price volatility, regulatory uncertainty, and financial exclusion, this is a fake abstract placeholder.
+
+\vspace{8cm}
+
+\raggedright
+
+\textbf{Keywords:} Cryptocurrency, Currency Substitution, Dollarization 2.0, Bitcoin
+
+\newpage
+
+\tableofcontents
+
+\newpage
+
+\listoffigures
+
+\clearpage
+
+\listoftables
+
+\newpage
+
+```{=tex}
+\pagenumbering{arabic}
+\pagestyle{arabic}
+```
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r getting libraries, include = F, warning = F}
+library(dplyr)
+library(rvest)
+library(xml2)
+library(httr)     # OpenAI Access
+library(jsonlite) # OpenAI Access
+library(mice)     # Evaluating Missings
+library(tidyr)
+library(tibble)
+library(openxlsx)
+library(kableExtra)
+library(knitr)
+library(bookdown)
+library(openxlsx)
+library(ggplot2)
+library(lubridate)
+library(countrycode)
+library(tidyverse)
+library(sf)
+library(rnaturalearth)
+library(rnaturalearthdata)
+library(ggridges)
+library(reshape2)
+library(gt)
+library(broom)
+library(caret) #YJ Transformation
+```
+
+```{r setting working directory, include = F,}
+setwd("C:/Users/vaylo/OneDrive/Desktop/Masters Thesis/Working Directory/Data")
+```
+
+```{r d.Country_Codes, include = F }
+# Loading World Bank country codes from a website
+url <- "https://irows.ucr.edu/research/tsmstudy/wbcountrycodes.htm" 
+html_content <- read_html(url)
+
+d.Country_Codes <- html_content %>%
+  html_node("table") %>%  
+  html_table()
+
+#Cleaning Up
+d.Country_Codes <- d.Country_Codes %>% 
+  rename(Country.Name = X1, Country.Code = X2) %>% 
+  slice(-(1:2)) %>% 
+  filter(!row_number() %in% c(4, 9, 21, 62, 66, 72, 74, 76, 77, 79, 118,     131, 132))
+
+
+v.Country_Codes <- d.Country_Codes$Country.Code
+remove(url,html_content)
+
+# New country codes to add - some were missing
+new_country_codes <- c("SRB", "ROU", "SGP", "ARE")  # Add as many as needed
+
+# Append new codes to the existing vector
+v.Country_Codes <- unique(c(v.Country_Codes, new_country_codes))  # Ensure uniqueness
+```
+
+```{r indicator list, include = F}
+d.Indicators <- data.frame(
+  Indicator = character(),
+  Indicator_Code = character()
+)
+
+unique_combinations <- function(df, col1_name, col2_name) {
+  # Get the unique values of both specified columns
+  col1_values <- unique(df[[col1_name]])
+  col2_values <- unique(df[[col2_name]])
+  
+  # Create a data frame with all unique combinations of the two columns
+  combinations_df <- expand.grid(Col1 = col1_values, Col2 = col2_values)
+  
+  return(combinations_df)
+}
+```
+
+```{r d.Inflation, include = F}
+# Working with Inflation -> 
+# Source: https://data.worldbank.org/indicator/FP.CPI.TOTL.ZG
+
+path <- "Data/d.Inflation/API_FP.CPI.TOTL.ZG_DS2_en_csv_v2_3401965.csv"
+d.Inflation <- read.csv(path, header = T, skip = 4) 
+
+# Extracting indicators and putting them in a separate running tally 
+indicators <- unique_combinations(d.Inflation, "Indicator.Name", "Indicator.Code")
+colnames(indicators) <- colnames(d.Indicators)
+d.Indicators <- rbind(d.Indicators, indicators)
+remove(indicators)
+
+# Cleaning Data d.Inflation
+d.Inflation <- d.Inflation %>%
+  filter(Country.Code %in% v.Country_Codes) %>%
+  select(Country.Code, X2019:X2023)  # Removed Indicator.Code
+
+# Rename first column to "Country"
+colnames(d.Inflation)[1] <- "Country"
+
+# Remove 'X' prefix from year columns
+colnames(d.Inflation) <- gsub("^X", "", colnames(d.Inflation))
+
+d.Inflation <- d.Inflation # %>%
+  #mutate(`2024` = NA)
+```
+
+```{r, d.GDP, include = F}
+# Working with GDP per Capita -> 
+# Source: https://data.worldbank.org/indicator/NY.GDP.PCAP.CD
+
+path <- "Data/d.GDP/API_NY.GDP.PCAP.CD_DS2_en_csv_v2_3401556.csv"
+d.GDP <- read.csv(path, header = T, skip = 4) 
+
+# Extracting indicators and putting them in a separate running tally 
+indicators <- unique_combinations(d.GDP, "Indicator.Name", "Indicator.Code")
+colnames(indicators) <- colnames(d.Indicators)
+d.Indicators <- rbind(d.Indicators, indicators)
+remove(indicators)
+
+# Cleaning Data d.GDP
+d.GDP <- d.GDP %>%
+  filter(Country.Code %in% v.Country_Codes) %>%
+  select(Country.Code, X2019:X2023)  # Removed Indicator.Code
+
+# Rename first column to "Country"
+colnames(d.GDP)[1] <- "Country"
+
+# Remove 'X' prefix from year columns
+colnames(d.GDP) <- gsub("^X", "", colnames(d.GDP))
+
+d.GDP <- d.GDP #%>%
+  #mutate(`2024` = NA)
+```
+
+```{r d.GDS, include = F}
+# Working with Gross Domestic Savings (% of GDP) -> 
+# Source: https://data.worldbank.org/indicator/NY.GDS.TOTL.ZS
+
+path <- "Data/d.Savings/API_NY.GDS.TOTL.ZS_DS2_en_csv_v2_1988.csv"
+d.GDS <- read.csv(path, header = T, skip = 4) 
+
+# Extracting indicators and putting them in a separate running tally 
+indicators <- unique_combinations(d.GDS, "Indicator.Name", "Indicator.Code")
+colnames(indicators) <- colnames(d.Indicators)
+d.Indicators <- rbind(d.Indicators, indicators)
+remove(indicators)
+
+# Cleaning Data d.GDS
+d.GDS <- d.GDS %>%
+  filter(Country.Code %in% v.Country_Codes) %>%
+  select(Country.Code, X2019:X2023)  # Removed Indicator.Code
+
+# Rename first column to "Country"
+colnames(d.GDS)[1] <- "Country"
+
+# Remove 'X' prefix from year columns
+colnames(d.GDS) <- gsub("^X", "", colnames(d.GDS))
+
+#d.GDS <- d.GDS #%>%
+  #mutate(`2024` = NA)
+```
+
+```{r d.RR, include = F}
+# Working with Personal Remittances Received (% of GDP) -> 
+# Source: https://data.worldbank.org/indicator/BX.TRF.PWKR.DT.GD.ZS
+
+path <- "Data/d.RemittancesGDP/API_BX.TRF.PWKR.DT.GD.ZS_DS2_en_csv_v2_3426.csv"
+d.RR <- read.csv(path, header = T, skip = 4) 
+
+# Extracting indicators and putting them in a separate running tally 
+indicators <- unique_combinations(d.RR, "Indicator.Name", "Indicator.Code")
+colnames(indicators) <- colnames(d.Indicators)
+d.Indicators <- rbind(d.Indicators, indicators)
+remove(indicators)
+
+# Cleaning Data d.RR
+d.RR <- d.RR %>%
+  filter(Country.Code %in% v.Country_Codes) %>%
+  select(Country.Code, X2019:X2023)  # Removed Indicator.Code
+
+# Rename first column to "Country"
+colnames(d.RR)[1] <- "Country"
+
+# Remove 'X' prefix from year columns
+colnames(d.RR) <- gsub("^X", "", colnames(d.RR))
+
+d.RR <- d.RR #%>%
+  #mutate(`2024` = NA)
+```
+
+```{r, d.External_Debt, include = F, warning = F}
+# Working with External Debt (% of GDP) -> 
+# Source: https://www.focus-economics.com/economic-indicator/external-debt/ 
+
+path <- "Data/d.External_Debt_GDP/d.External_Debt_GDP.xlsx"
+
+# Loading Raw Data
+d.ED <- read.xlsx(path)
+
+# Adding World Bank Codes
+
+d.ED$Country <- countrycode(d.ED$Country, "country.name", "iso3c")
+# warning about unconnected code can be safely ignored since the dataset d.Adoption does not contain the two unmatched countries (Ivory Coast, Kosovo) anyways.
+
+#for some reason, column 2,3 did not save as numeric
+d.ED$'2019' <- as.numeric(d.ED$'2019')
+d.ED$'2020' <- as.numeric(d.ED$'2020')
+
+d.ED <- d.ED #%>%
+  #mutate(`2024` = NA)
+```
+
+```{r AdoptionLoad, echo = F}
+path <- "Data/d.Adoption/Statista2024.xlsx"
+d.Adoption <- read.xlsx(path, sheet = "Data")
+
+# Convert country names to ISO3 codes
+d.Adoption$Country <- countrycode(d.Adoption$Country, "country.name", "iso3c")
+```
+
+# Motivation and Topic Definition
+
+The development of cryptocurrencies, spawned alongside blockchain technology, have challenged traditional monetary systems and economic structures. Since its inception in the wake of the Global Financial Crisis, cryptocurrencies and particularily Bitcoin have been championed by advocates for its decentralized nature, security, and potential as a replacement for fiat currencies. Cryptocurrencies are often viewed as a solution for individuals and nations where conventional financial systems are dysfunctional or highly volatile, providing an alternative currency that is not controlled by the same rules as a potentially dysfunctional monetary system.
+
+## "Traditional" Cryptocurrencies
+
+In contrast to fiat currencies, which derive their value from governmental decree and are backed by legal frameworks, traditional cryptocurrencies operate on a decentralized network of peer-to-peer transactions that do not rely on a central authority. This decentralized nature means that transactions are verified by a distributed ledger known as blockchain, rather than by a trusted intermediary like a bank. Some cryptocurrencies, most notably Bitcoin have a function which reduces and eventually ceases the issuance of new coins through network design. This theoretically deflationary approach is in stark contrast to fiat currencies, where the authorities usually target an inflation rate of 2% annually [@ammous2018, @centralbanknews2025]. The slow(ing) growth in supply of Bitcoin relative to the existing stock of coins is what leads to idea that Bitcoin is "Digital Gold", since the stability in value of gold is attributable to the same phenomenon of large existing stocks with very slow growth in supply [@ammousBTCstd]. The lack of control by a single entity and slow growth have spawned the belief that cryptocurrencies are immune to inflationary pressures, government control, and political instability, which can all negatively affect those using fiat currencies in the *status quo* financial system.
+
+## Stablecoins
+
+An important subset of cryptocurrencies in relation to this topic are stablecoins. These are cryptocurrencies which have prices linked to reference assets. In this sense, they are different to "traditional" cryptocurrencies in that the price is driven by centralized actors, rather than the collective decicions of the users. @catalini2022 identify the main ways stability can be achieved are:
+
+1.  Backing of the stablecoins by one or more fiat currencies.
+
+2.  Backing of the stablecoin by one or more cryptocurrencies, not issued by the same entity as the stablecoin.
+
+3.  Backing of the stablecoin by one or more cryptocurrency issued by the same entity as the stablecoin, which can be used to manipulate the price of the stablecoin (algorithmic stablecoins).
+
+4.  A suggested market mechanism for stability has also been found in the research. Some papers argue that the increased purchase of stablecoins during market downturns, rather than traditional cryptocurrencies acts as an additional stabilizing force for stablecoin's prices, beyond the currency architecture [@baur2021; @lyons2020].
+
+Stablecoins have the potential to combine the stability benefits of well managed fiat currencies with the settlement speed advantages of cryptocurrencies [@catalini2022]. And while the consensus is that stablecoins are more stable than traditional cryptocurrencies, they have not managed to maintain the desired pegs to fiat currencies consistently [@baughman2022; @kosse2023].
+
+## Adoption of Cryptocurrencies
+
+Cryptocurrency adoption has not been uniform. As Figure \@ref(fig:AdoptionMap) shows, for those countries with available data, the number of survey respondents who said they use cryptocurrency was as low as 6% and as high as 47%. That is a considerable difference! Factors driving cryptocurrency adoption vary greatly across countries and are heavily debated among academics (see \@ref(literature-review-adoption-of-cryptocurrency)). Understanding the global drivers of cryptocurrency adoption, particularly in the context of factors that are more relevant for emerging markets with less developed financial systems provides a valuable insight into cryptocurrency's potential future size and role in the global economy.
+
+\FloatBarrier
+
+```{r AdoptionMap, echo = F, fig.cap="Map Showing Cryptocurrency Adoption Percentage for 2023 (Statista, 2024a)",fig.width=6, fig.height=4, fig.pos = 'H'}
+selected_year <- "2023"  # Changeable variable
+# Rename columns for compatibility
+d.Adoption_long <- d.Adoption %>%
+  rename(iso_a3 = Country) %>%
+  select(iso_a3, all_of(selected_year))
+
+# Load world map data
+world <- ne_countries(scale = "medium", returnclass = "sf")
+
+# Merge dataset with world map
+world_data <- left_join(world, d.Adoption_long, by = "iso_a3")
+
+# Plot world map
+ggplot(data = world_data) +
+  geom_sf(aes(fill = get(selected_year))) +
+  scale_fill_gradientn(colors = c("purple", "green", "yellow"), na.value = "gray") +
+  labs(#title = paste("Adoption Data for Year", selected_year),
+       fill = "% Adoption") +
+  theme_minimal()
+```
+
+\FloatBarrier
+
+## Decentralized Alternatives
+
+Two key factors have led to the idea that cryptocurrencies can be used as an alternative currency by people in dysfunctional financial systems. These two factors are the **internet-based nature of cryptocurrencies** and the **relative price stability of cryptocurrencies.**
+
+Firstly, the internet based nature means that most people with a smartphone and internet can relatively easily access the necessary infrastructure to buy and sell cryptocurrencies. This extends beyond political borders - there is nothing intrinsically hindering people or institutions in different political jurisdictions from exchanging with each other. This is different to using fiat currencies, where financial institutions (usually) comply with regulations on the transfer of digital funds and the lack of physical proximity between buyers and sellers fiat currency limits the ability to exchange cash.
+
+Secondly, depending on the inflationary context, the price of cryptocurrencies can be relatively stable. Stability of a local currency is usually measured either against inflation or a exchange rate to a major currency. The price fluctuations of particularily stablecoins can be lower than those of many fiat currencies, and even Bitcoin, which has no intrinsic stability mechanisms has maintained it's value against fiat currencies in high inflation settings.
+
+## Currency Substitution
+
+The use of alternative currencies by people is not new, there is an entire body of research devoted understanding this practice, known as *currency substitution*. Currency substitution is defined by @calvo2002 as the highly prevalent use of [foreign]{.underline} fiat currencies to fulfill any of the three functions of money (store of value, means of exchange, unit of account). Note, there is also something known as *official currency substitution*, which is when a government officially adopts a foreign currency as a legal tender in their own country. However, this paper refers to the personal and in unofficial use by individuals.
+
+This research paper draws upon the well-established theories of currency substitution to explore the factors driving cryptocurrency adoption. By examining the similarities between currency substitution and cryptocurrency adoption, this study aims to determine whether the predictors of currency substitution can be built into models of cryptocurrency adoption to improve the explanatory power.
+
+## Literature Gap and Relevance
+
+The research is relevant for both academics and policymakers. The contribution to the academic literature is twofold. Firstly, existing models cannot fully explain the differences in adoption seen across countries. Secondly and more innovatively, the paper provides corresponding analysis for cryptocurrency through the lens of currency substitution, which has not been done before to the best of my knowledge. As will be seen in the section [Dependent Variable: Bitcoin Adoption] this research paper makes use of a new and to my knowledge previously not studied panel dataset of Bitcoin adoption that will be able to capture the most recent trends in this area.
+
+In terms of policymakers, it is important for them to be able to understand how changes in underlying economic conditions may influence the use of cryptocurrency as this will have policy implications. It is likely that questions around cryptocurrency will increase in importance in the future due to the increased interest and usage of cryptocurrencies globally: Both from private individuals and governments looking to capitalize on the technology in various ways. Figure \@ref(fig:fig-btc) below shows the trend in cryptocurrency's market capitalization in USD from 2010 - 2025. This increased capitalization is evidence of interest in the technology among market players.
+
+\FloatBarrier
+
+```{r fig-btc, fig.cap="Cryptocurrency Market Capitalization 2010-2025 (Statista, 2025)", echo=FALSE, warning= F, fig.width=6, fig.height=4, fig.pos = 'H'}
+
+# Working Bitcoin Adoption-> 
+# Source: https://www.statista.com/statistics/730876/cryptocurrency-maket-value/
+path <- "Data/d.Market_Cap_BTC/Statista_Crypto_Market_Cap.xlsx"
+d.Market_Cap <- read.xlsx(path,sheet = "Data") 
+d.Market_Cap$Date <- as.Date(d.Market_Cap$Date, format="%b %d, %Y")
+
+ggplot(d.Market_Cap, aes(x = Date, y = Capitalization)) +
+  geom_line(color = "blue", size = 1) +   # Line plot
+  scale_x_date(date_labels = "%b %Y", date_breaks = "3 months",
+               limits = c(min(d.Market_Cap$Date), max(d.Market_Cap$Date)),
+               expand = c(0, 0)) +  # Prevents ggplot from adding extra space
+  labs(
+       x = "Date",
+       y = "Market Cap (in Billion U.S. Dollars)") +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 60, hjust = 1, size = 6),  # Adjust x-axis text
+    panel.grid.major = element_line(size = 0.2, linetype = "solid", color = "gray80"),  # Reduce major gridline thickness
+    panel.grid.minor = element_blank()  # Completely remove minor gridlines
+  )
+```
+
+\FloatBarrier
+
+```{r, echo = F}
+# Remove Taiwan (TWN)
+d.Adoption <- d.Adoption %>% filter(Country != "TWN")
+```
+
+In addition to the increased capitalization, policymakers have begun to carve out a space for blockchain technology in their economies in different ways. Likely the most famous example is El Salvador legislating Bitcoin as a legal tender in their country in 2021 [@bbc2021]. However there are also other examples such as the canton of Zug in Switzerland allowing residents to pay taxes up to CHF 1.5M with certain cryptocurrencies or several large institutional investors and sovereign wealth funds globally purchasing Bitcoin [@chainalysis2024; @kantonzug]. At the time of writing, a recent example is Mubadala Investment's (Abu Dhabi) purchase of USD 436M in Bitcoin [@cryptodaily2025]. All of that is to say, research aiming to understand drivers of cryptocurrency demand is likely to remain relevant or even increase in importance in the foreseeable future.
+
+**Roadmap**
+
+For the definition of the research topic, two questions / fields are of interest: "What drives currency substitution?" and "What drives the adoption of cryptocurrencies?" These topics will now be investigated in separate literature reviews in the next section. From these reviews the research question "[[**RQ HERE**]{.underline}]" will be developed. Next, the methods, data and data transformation used to answer the research question will be discussed and visualized. Finally, the statistical results are shown, discussed and placed in the academic context to provide conclusions for researchers and policymakers interested in what factors can drive the adoption of cryptocurrency.
+
+\newpage
+
+# Literature Review: Currency Substitution
+
+There is a body of academic literature evaluating why individuals use foreign currencies, this section discusses this literature. Those interested in a succinct visual overview should visit Table \@ref(tab:litreviewCS) in the Appendix.
+
+## Currency Stability
+
+The stability of local currencies as a driver for foreign currency adoption is a debated issue in the academic literature, since there are two main ways of looking at currency stability (inflation and exchange rate), these topics are evaluated separate.
+
+### Inflation
+
+Both perceived and real economic problems are identified in the literature as reasons for people to engaging in currency substitution, the primary economic issue here is inflation. There are quantitative studies, such as those by @vieira2012 and @rennhack2006 finding inflation is a key predictor of currency substitution. Another quantitative paper @honig2009 argues that lack of trust in the stability of the local currency leads people to use foreign currencies. Finally, an implicit argument for the viewpoint that inflation leads to currency substitution is made by @kokenyne2010 who argue countries wishing to stop currency substitution from happening in their domestic economies should focus their efforts on taming excess inflation. This claim is backed up by a practical study of the Turkish economy by @tasseven2015 who argues that foreign currencies were used precisely due to the high and inflation in the 1990s an then began falling out of favor as price stability increased. @levy2021 makes a similar conclusion when he credits inflation first, among a number of factors for the success of many Latin American countries to reduce currency substitution, which is oftentimes seen as negative in the eyes of policymakers. Although a considerable amount of studies credit inflation as positively related to currency substitution, one study focusing on Croatia, Slovenia and Slovakia by @stix2011 did not find inflation to be a contributing factor to currency substitution.
+
+### Exchange Rate
+
+Another measure of currency stability, the volatility of the exchange rate to major currencies is also oftentimes found to be important in relation to why individuals begin using a foreign currency. Using a threshold ARCH model on 28 countries and an auto regressive distributed lag model of Nigeria, @ju and @ajibola2021 respectively find that there is a correlation between the foreign exchange rate volatility and the use of foreign currencies. Contrary to these findings however, the already mentioned study by @stix2011 also did not find exchange rate volatility to be a contributing factor to currency substitution.
+
+## Risk of Sovereign Default
+
+The risk of a sovereign default also appears in the literature on currency substitution, although less clearly than inflation. @vieira2012 find this to be a stronger predictor of currency substitution than inflation in their quantitative study on 79 economies at different development levels. To the best of my knowledge no other studies have evaluated this convincingly. Although @vieira2012 do quote a number of papers as foundations for evaluating the risk of sovereign in their review, many of these do not clearly claim the logic applied by @vieira2012. Other studies tend in the area focus on official currency substitution and the effect that this choice has on the risk of sovereign default [@berg2000, @sims2001]. Little consideration is given to the case of currency substitution as a choice by individuals and how this choice is influenced by the risk of sovereign default. However, the study be @vieira2012 clearly shows it's importance and therefore this factor should be included in a study on the topic
+
+## Technology
+
+There are also some studies arguing the advancement of technology will aid in facilitating currency substitution. @guidotti1993 argues using a theoretical model, that the reduction on transaction and holding costs to foreign currency, spurred by financial innovation can promote it's use. Such a theory is practically backed up a study of Nigeria by @ujunwa2021 who take an augmented money demand model which includes markers for technology (for example: internet banking transactions) and find that these are strong predictors of foreign currency use. It is therefore not far fetched to argue that a new technology like cryptocurrency could spur the use of currency substitution, even if this implies the use of a new "currency", so long as this currency has the potential to reduce transaction and holding costs, which the fundamentals of certain cryptocurrencies definitely do.
+
+\newpage
+
+# Literature Review: Adoption of Cryptocurrency
+
+There is a wide body of literature studying the usage of cryptocurrency that finds several of the factors connected to currency substitution to be linked to the adoption of cryptocurrency, however most of these studies focus on Bitcoin, rather than other digital assets. Those interested in a succinct visual overview should visit \@ref(tab:litreviewCA) in the Appendix.
+
+## Inflation
+
+There are a number of studies that have evaluated the relationship between cryptocurrency and inflation. @choi2022, @conlon2021 and @gaies2024 study time series data on Bitcoin prices and find that they are correlated positively to inflation or inflation expectations. Mixed evidence is presented by @phochanachan2022 who find the inflation hedge is only present in the short term. Academic case studies of countries using cryptocurrency in response to inflation are limited, only @taskinsoy comes up. He argues that the relative instability of the Turkish Lira is what drives many in the country to use the cryptocurrency Bitcoin instead of the local currency.
+
+Similar studies as mentioned at the beginning of the section study time series data of inflation and the price of Bitcoin, these however find no effect of correlation between Bitcoin [@basher2022; @smales2024]. In studying country economies, both @parino and @ricci2020 find that there is a negative effect of inflation on the price of the cryptocurrency Bitcoin. However it should be noted that the former focused on data from before 2015, which may have been too early to see adoption in developing countries and the latter only evaluated already developed economies which have seen lower levels of inflation compared to developing countries.
+
+## Investment
+
+Investment is found as a key use case for the purchase of cryptocurrencies. @voskobojnikov2020 conduct interviews among North American respondents and find investment is one of the main intended uses of cryptocurrency among non-users. Quantitative studies back this idea up. @glaser2014 find that the pattern of trading on the former Mt. Gox cryptocurrency trading platform implies that users were investing, not using the currency for payments. This is because while the value of currencies on individual accounts did change, the total value on the exchange did not change significantly. To the authors, this suggested that users were shuffling funds between each other, but not using the cryptocurrencies for payments.
+
+## Wealth
+
+Wealth is a well established factor connected to to cryptocurrency in academia, studied through various methods. @lammer2019 studied German bank accounts and found wealthier people were more likely to own Bitcoin. This conclusion is backed up on a national scale by @parino who found GDP per capita to be positively correlated to Bitcoin ownership. Further survey evidence on the average cryptocurrency user is provided by @gemini2021 who find the average cryptocurrency investor has a household income of USD 110K, more than 1.5 times the national average for that year. It should be noted that the survey was not representative and explicit only includes those with a household income above USD 40K, meaning the real average household income of the average investor is likely lower. The results of the studies indicate that volatile assets like cryptocurrency may only be bought only by those who can afford to take temporary losses when the price of the asset decreases.
+
+## Sins
+
+The use of cryptocurrencies in areas that are illegal or considered immoral is also a driver of their usage in many cases. This is a fairly diverse list, so only some illustrative examples will be presented here. It ranges from using Bitcoin to pay for illicit goods and services, such as was done on the now shut down Silk Road dark - web sites [@saurabh2017]. Research has found that countries with larger shadow economies, the Bitcoin trading volume is much more strongly responsive to shocks to the shadow marked (raids, seizures), indicating the cryptocurrency Bitcoin is used for illicit transactions [@marmora2021].
+
+Cryptocurrencies may also be used extensively by sanctioned countries to settle international debts. Iranian academics have evaluated the possibility of using cryptocurrencies to settle debts for their resource exports, which is difficult to do in the current international settlement architecture given the punitive international sanctions placed on the country [@sarvi2020]. Venezuela developed the *Petro*, a coin who's value was tied to the country's oil reserves and was meant to serve as a means of settling international payments for the sanctioned country, the project was discontinued in 2024 [@rfi2024]. Personally sanctioned elites in the country also are likely using cryptocurrencies to move money abroad, according to an analysis by @chainalysis2020 75% of all cryptocurrency transaction on a randomly selected Venezuelan exchange were over USD 1K, given the relatively low wages in the country, it is likely that this represents sanctioned individuals attempting to move funds out of the country. Further evidence is provided by @alnasaa2022 who see higher adoption of Bitcoin in corrupter countries, indicating the possibility that corrupt officials are using the cryptocurrency Bitcoin to move proceeds from corruption.
+
+## Remittances
+
+Another potential reason for the adoption of cryptocurrency is for remittance payment. This has not been studied extensively academically but the economic fundamentals and some practical examples show the potential. Fees for remittance payments can be very expensive, between 6.9-20% according to @ruehmann2020. Simultaneously blockchain technology can have incredibly low fees, typically between 0-1% according to @dyhrberg2018. This low cost has led some academics like @folkinshteyn2015 to argue cryptocurrencies like Bitcoin could form an important aspect of lowering remittance costs. This cost advantage, was the official reason behind El Salvador making Bitcoin legal tender in 2021 [@bbc2021]. In terms of cryptocurrencies more broadly, there was at one point a concerted effort by the Libra Association (Facebook / Meta) to release a stablecoin that was to be integrated with existing and widely used Meta communications platforms such as Whatsapp. Through this integration, it had the potential to reach the 1.1B people globally who have a mobile phone, but no bank account [@worldbank2018]. While challenges like internet access and identity verification for users would have remained, the potential of this stablecoin integrated in communication service for remittances hard to deny [@ruchti]. Ultimately, the project ended due to regulatory opposition from the United States [@mcnickel2024]. All of that is to say that the potential for cryptocurrencies or the blockchain architecture to increase financial inclusion is there and has been explored.
+
+## Capital Controls
+
+There exists research that claims capital controls to be relevant to the adoption of cryptocurrency. @carlson2016 conducts expert interviews on the Argentine example and finds that capital controls can and are being evaded using Bitcoin. @hu2021 study Chinese Bitcoin transaction and conclude that 25% of the transaction volume represents capital flight out of the country. @viglione2015 find a similar result in a quantitative analysis of multiple economies. They see a "premium" being paid for Bitcoin in these countries, which they interpret as an extra demand for Bitcoin relative to other countries, which they interpret as "extra demand". Additional evidence for the importance of capital controls is provided by @alnasaa2022 who run a cross country analysis including capital controls as a predictor and find the capital controls to be a statistically significant predictor of cryptocurrency usage. The study of capital controls as a predictor in any field is limited by the diversity of potential measures to restrict capital flow and the lack of a standardized metric.[^1]
+
+[^1]: Note: An index such as the one produced in this paper from regularly published IMF Data could form the basis for consistent and replicable study of capital controls. See Section \@ref(predictors-independent-and-control-variables).
+
+\newpage
+
+# Research Question
+
+Due to the similarity in potential uses of foreign currency and cryptocurrency, this paper evaluates a model considering not only the predictors of cryptocurrency usage (currency stability, investment, wealth, sins, remittances, capital controls), but also the additional factor coming from the currency substitution literature (sovereign default risk) can build an improved model of cryptocurrency adoption. Technology is not explicitly included as a predictor, despite it's discovery in the literature since this is assumed to be fully covered by the introduction of cryptocurrency, itself, a new technology.
+
+The research question can be summarized as: *Do currency stability, investment, wealth, sins, remittances, capital controls and sovereign default risk effect the adoption of cryptocurrency?*
+
+**Statistical Research Question**
+
+```{=tex}
+\begin{align*}
+\text{Cryptocurrency Adoption}_{i,t} &= \beta_0 + (\beta_1 \cdot \text{Currency Stability}_{i,t}) \\
+&+ (\beta_2 \cdot \text{Investment}_{i,t}) \\
+&+ (\beta_3 \cdot \text{Wealth}_{i,t}) \\
+&+ (\beta_4 \cdot \text{Sins}_{i,t}) \\
+&+ (\beta_5 \cdot \text{Remittances}_{i,t}) \\
+&+ (\beta_6 \cdot \text{Capital Controls}_{i,t}) \\
+&+ (\beta_7 \cdot \text{Sovereign Default Risk}_{i,t}) + \varepsilon_{i,t}
+\end{align*}
+```
+Where:
+
+$\beta_0$: The intercept, representing the baseline level of cryptocurrency adoption when all predictors are equal to zero.
+
+$\beta_1, \beta_2, \dots, \beta_7$: Coefficients for each independent variable, showing the expected change in cryptocurrency adoption for a one-unit change in the respective predictor, holding all other variables constant.
+
+$i$: Denotes the cross-sectional unit (country) in the panel data.
+
+$t$: Denotes the time period in the panel data.
+
+$\varepsilon_{i,t}$: The error term, capturing unobserved factors for each country and year.
+
+\newpage
+
+# Methodology
+
+This section discusses the quantitative methods to answer the research question. It is organized as follows. Firstly, common terms among the models are introduced, then the formula defining fitted input - output relationship between the independent and dependent variables are described, with additional terms being defined where necessary. Next, the hypothesis and significance level are discussed.
+
+Finally, benefits and drawbacks are discussed in relation to how well the methodology can answer the research question.
+
+## Common Terms
+
+This section discussed shared terms among the models.
+
+$\beta_0$: The intercept, representing the baseline level of cryptocurrency adoption when all predictors are equal to zero.
+
+$\beta_1, \beta_2, \dots, \beta_7$: Coefficients for each independent variable, showing the expected change in cryptocurrency adoption for a one-unit change in the respective predictor, holding all other variables constant.
+
+$i$: Denotes the cross-sectional unit (country) in the panel data.
+
+$\varepsilon$: The error term, capturing unobserved factors
+
+## Hypothesis
+
+Formally, the null and alternative hypothesis, in words and mathematically are:
+
+**Null Hypothesis**
+
+$H_0$: Inflation, investment, wealth, sins, remittances, capital controls and\newline sovereign default risk have no statistically significant effect on cryptocurrency adoption.\newline \newline$H_0:B_1=B_2=B_3=B_4=B_5=B_6=B_7=0$
+
+**Alternative Hypothesis**
+
+$H_1$: At least one independent variable has a statistically significant\newline effect on cryptocurrency adoption.\newline\newline $H_1: \exists \beta_j \neq 0, \quad \text{for at least one } j \in \{1,2,3,4,5,6,7\}$
+
+**Direction of Effect**
+
+The alternative hypothesis does not specify a direction of effect due to the limited research on sovereign default risk and cryptocurrency adoption. Although the expectation is that countries with a higher risk of sovereign default will have a higher Bitcoin adoption, as this is the direction seen in the effect of sovereign default risk on currency substitution.
+
+**Significance Level**
+
+Due to the limited data size and therefore statistical power of this paper (see [Underlying Data]) a significance level at the upper end of the normal range ($\alpha=0.1$) will be used.
+
+## Model 1: Linear Regression - No Transformation
+
+The first model is a linear regression with the temporal aspect modelled as a quantitative predictor, mathematically, it is no different than any of the other independent variables, although a statistically significant term for the coefficient $B_t$ will have no contribution to solving the research questions. The formula can be seen below. The results for this model can be seen in the section \@ref(model-1-linear-regression-no-transformation).
+
+```{=tex}
+\begin{align*} 
+\text{Cryptocurrency Adoption}_{i} &= \beta_0 + (\beta_t \cdot \text{Year}_{i}) \\ 
+&+ (\beta_1 \cdot \text{Currency Stability}_{i}) \\ 
+&+ (\beta_2 \cdot \text{Investment}_{i}) \\ 
+&+ (\beta_3 \cdot \text{Wealth}_{i}) \\
+&+ (\beta_4 \cdot \text{Sins}_{i}) \\
+&+ (\beta_5 \cdot \text{Remittances}_{i}) \\
+&+ (\beta_6 \cdot \text{Capital Controls}_{i}) \\
+&+ (\beta_7 \cdot \text{Sovereign Default Risk}_{i}) + \varepsilon_{i} 
+\end{align*}
+```
+## Model 2: Linear Regression - Transformations
+
+The second model extends the previous model by explicitly transforming certain variables. This is done to better meet the assumptions of a linear regression, which requires a normally distributed variables. As will be seen in the section \@ref(exploratory-data-analysis), not all of the variables clearly meet this assumption. It is therefore worth to run a model with transformations applied. It should be noted that the interpretation of the coefficients will become altered as a result of this.
+
+```{=tex}
+\begin{align*}  
+\text{Cryptocurrency Adoption}_{i} &= \beta_0 + (\beta_t \cdot \text{Year}_{i}) \\  
+&+ (\beta_1 \cdot \text{Currency Stability}_{i}) \\
+&+ (\beta_2 \cdot \text{Investment}_{i}) \\
+&+ (\beta_3 \cdot \text{Wealth}_{i}) \\
+&+ (\beta_4 \cdot \text{Sins}_{i}) \\
+&+ (\beta_5 \cdot \text{Remittances}_{i}) \\
+&+ (\beta_6 \cdot \text{Capital Controls}_{i}) \\
+&+ (\beta_7 \cdot \text{Sovereign Default Risk}_{i}) + \varepsilon_{i}  \end{align*}
+```
+## Internal Validity
+
+-   Can we draw cause and effects?
+
+-   Strength of Proxies?
+
+## External Validity
+
+Due to the broad range of countries included in this study, the generalizability of the results should be broad. Figure \@ref(fig:fig-worldmap-selected) shows the countries available in the @statista_adoption and being studied. It is clear that a diversity of countries are represented by the data, in different socioeconomic aspects such as those found as relevant in the literature review for both currency substitution and cryptocurrency adoption. The main criticism in terms of generalizability would likely be the under inclusion of African countries, with just 4 out of the 54 countries on the continent represented. Nevertheless, the the argument can be made that this research will be applicable to most countries that who's economic data falls within the range of the independent variables. Extreme outliers such as North Korea will not fall within this scope, but that is typical of almost any national level panel data analysis.
+
+\FloatBarrier
+
+```{r fig-worldmap-selected, echo = F, fig.width=6, fig.height=4, fig.pos = 'H', fig.cap= "Map Showing Countries With Available Cryptocurrency Adoption Data"}
+world <- ne_countries(scale = "medium", returnclass = "sf")
+display_country_codes <- d.Adoption$Country
+world <- world %>%
+  mutate(highlight = ifelse(iso_a3 %in% display_country_codes, "Yes", "No"))
+ggplot(data = world) +
+  geom_sf(aes(fill = highlight), color = "black", size = 0.01) +
+  scale_fill_manual(values = c("Yes" = "blue", "No" = "lightgray")) +
+  theme_minimal() +
+  labs(fill = "Data Availability?")
+
+```
+
+\FloatBarrier
+
+\newpage
+
+# Underlying Data
+
+This section discusses the underlying data used for the paper.
+
+## Dependent Variable: Bitcoin Adoption
+
+Bitcoin adoption is measured using a newly released dataset by @statista_adoption. The dataset is the results of a survey where respondents were asked if they had used cryptocurrency in the given year. The data's first few rows can be seen in Table \@ref(tab:Adoption) below. Due to the unavailability of data for the other variables for the year 2024, only data up to 2023 will be used from this set. The data is available for 56 countries of different levels of economic development.
+
+The data quality of the survey leaves little room practical room for improvement. While survey was not representative and voluntary, opening the data quality up to self - selection issues, the only real improvement could have been a mandatory national census. The authors describe their approach to data collection and it is clear and professional: sample sizes of at least 2k people per country, checks for bots and speed racers through in the survey and the survey was performed in the official languages of the country [@statista2020].
+
+```{r Adoption, echo = F }
+# Display table
+d.Adoption %>%
+  head() %>%
+  kable(col.names = c("Country", "2019", "2020", "2021", "2022", "2023", "2024"), 
+        caption = "Statista (2024a) Data: \\ Share (Percentage) of Respondents Who Reported Using Cryptocurrency in Select Years") %>%
+  kable_styling(full_width = FALSE, latex_options = "hold_position")
+```
+
+## Predictors: Independent and Control Variables
+
+Table \@ref(tab:datatable) shows an overview of the indicators used as Proxies and their sources. The indicators for currency stability, investment, wealth, remittances and risk of sovereign default are self-explanatory and should b
+
+```{r, datatbl, echo = F, results = "asis"}
+# Create the data frame with citations and special characters handled
+lit_data_sources <- data.frame(
+  Indicator = c( "Inflation, consumer prices (annual %)",
+                 "Gross domestic savings (% of GDP)", 
+                 "GDP per capita (current US$)",
+                 "Personal remittances, received (% of GDP)",
+                 "External Debt (% of GDP)",
+                 "Political Corruption Index (see below)",
+                 "Bespoke Capital Controls Index (see below)"
+                 #"Mobile Access (%)",
+                 ),
+  Proxy_for = c("Currency Stability", 
+                "Investment", 
+                "Wealth",
+                "Remittances",
+                "Risk of Sovereign Default",
+                "Sins",
+                "Capital Controls"
+                #"Technology",
+                ),
+  Source = c("World Bank (2024c)",
+             "World Bank (2024b)",
+             "World Bank (2024a)",
+             "World Bank (2024d)",
+             "Focus Economics (2024)",
+             "V-Dem (2024)",
+             "IMF (2024)"
+             #"World Bank",
+             
+  )
+)
+
+# Generate the table using kable
+lit_data_sources %>%
+  kable(col.names = c("Indicator", "Proxy for", "(Primary) Source"), caption = "Overview of Data Sources for Independent Variables (\\#tab:datatable)") %>%
+  kable_styling(full_width = F, latex_options = "hold_position")
+
+
+```
+
+The following proxies must be additionally discussed: Investment, Sins, Capital Controls
+
+**Investment**
+
+Investment is related to Savings in National Accounting, more closely in some, than in other models. In the classical view of a closed economy without government spending, savings are equal to planned investment [@mitchell2019]. This make national savings as a percentage of GDP a good proxy for available investment funds.
+
+**Sins**
+
+A single indicator is used to encompass all of the Sinful uses of Bitcoin. The two primary sinful uses are criminality and the evasion of sanctions. Since Western countries routinely sanction individuals and not the countries themselves based on corruption, human rights abuses and other serious accusations, it makes sense to use corruption as a proxy for individual sanctions that people may attempt to circumvent using Bitcoin [@u.s.departmentofthetreasury2022]. Using corruption as a proxy for crime is also a possible approach as the link between corruption and (in particular organized) crime as been shown several regions in several studies [@buscaglia2003; @centerforthestudyofdemocracy2010; @mazzitelli2007] Therefore, the political corruption index, published by @politica2024 is used in an attempt to cover both crime and the likelihood that individuals attempt to move dirty money abroad. In a study with more data quantity available it would make sense to use more granular indicators, however due to the already small data size, the trade off of including several variables for the sinning attribute identified in the literature would be too adverse on the statistical power. Therefore, the "general" aggregated corruption by @politica2024 is used, rather than one of the specific corruption indicators, for example Executive (Branch) corruption [@olin].
+
+The @politica2024 data can be downloaded directly via library n R-Studio, after connecting to GitHub. To facilitate the combination with other data easier later, the world bank country codes are also added using {countrycode}, which can take different versions of country names and obtain the world bank code (ISO 3). The data is available only up to and including 2023.
+
+```{r, warning = F, warning = F, message = F, echo = F }
+# install.packages("devtools")
+# uncomment above lines when running for the first time
+devtools::install_github("vdeminstitute/vdemdata")
+library(vdemdata)
+d.Corruption <- vdem[, c("country_name", "year", "v2x_corr")] # relevant variables
+d.Corruption <- d.Corruption %>%
+  filter(year %in% c(2019: 2024)) # relevant years
+d.Corruption$Country <- countrycode(d.Corruption$country_name, "country.name", "iso3c")
+# above: world bank / ISO 3 code added
+```
+
+```{r, echo = F}
+# Renaming, dropping and re-arranging column
+d.Corruption <- d.Corruption %>%
+  rename(Corruption = last_col(offset = 1)) %>%
+  select(Country, everything(), -country_name) 
+
+# Dropping Gaza / Westbank / NA (represents Kosovo, Somaliland and Zanzibar: These are causing aggregation issues and are not in the depdendent variable so can be safely removed
+d.Corruption <- d.Corruption %>%
+  filter(!Country %in% c("PSE", NA))
+
+
+# Converting to Wide Format Panel Data
+d.Corruption <- d.Corruption %>%
+ pivot_wider(names_from = year, values_from = Corruption)  #%>% 
+ # mutate(`2024` = NA)
+```
+
+**Capital Controls**
+
+Since capital controls have been identified as important in section [Capital Controls], they must be accounted for an a model attempting to explain Bitcoin adoption. Unfortunately there is a lack of structured and recent data around this topic. The most recent dataset was created by @fernandez2016 and was updated with data up to 2017, who produced an index to measure the severity of capital controls. The source used here will be from the online query tool of @imf2024 which allows the recovering of information contained in the annually published Report on Exchange Arrangements and Exchange Restrictions, specifically the 5 indicators "Controls on Personal Payments", "Prior Approval", "Quantitative Limits", "Indicative Limits / Bona Fide Test" and "Controls on Personal Capital Transactions". The keys limitation of this dataset is that the data is only available up to and including 2022. Techniques to deal with missing data will be used to make this dataset usable, since to my knowledge it is the best available way to account for capital controls.
+
+The first rows of the raw data can be seen in Table \@ref(tab:d) below.
+
+```{r, d, echo = F}
+path <- "Data/d.CC/IMF (2024).xlsx"
+d.CC <- read.xlsx(path)
+d.CC %>%
+  head() %>%
+  kable(
+    col.names = c("Year", "IFS Code", "Country", 
+                  "Controls Personal \\ Payments",  
+                  "Prior \\ Approval",
+                  "Quantitative \\ Limits",
+                  "Indicative Limits / \\ Bona Fide Test",
+                  "Controls on Personal \\ Capital Transactions"),
+    escape = FALSE,  # Allows LaTeX commands like \\ to be used
+    caption = "IMF (2024) Capital Controls Dummy Data",
+    format = "latex"
+  ) %>%
+  kable_styling(full_width = F, latex_options = c("scale_down","H")) %>%
+  column_spec(1, width = "0.7cm") %>%  # Custom width for Year
+  column_spec(2, width = "1.5cm") %>%    # Custom width for IFS Code
+  column_spec(3, width = "1.7cm") %>%    # Custom width for Country
+  column_spec(4, width = "2.2cm") %>%    # Custom width for Controls Personal Payments
+  column_spec(5, width = "2.0cm") %>%  # Custom width for Prior Approval
+  column_spec(6, width = "2.3cm") %>%  # Custom width for Quantitative Limits
+  column_spec(7, width = "3.3cm") %>%  # Custom width for Indicative Limits / Bona Fide Test
+  column_spec(8, width = "3.5cm")      # Custom width for Controls on Personal Capital Transactions
+```
+
+In order to turn this into a quantitative variable, representing the strength of capital controls, these variables will be turned into an an index from 0-1 by assigning a value of 1 for each "yes" and 0 for each "no" and then dividing the result by the number of available data points for that country in that year, conceptually, this means that an index calculated with just one available data point look the same as one with all data points available. Additionally, it should be noted, by using an equally weighted index generating method, the (implicit) assumption is made that each of these types of restrictions is equally important in the types of capital controls that influence the adoption of cryptocurrency. In the case that a country and year has no data point (only 1 example in the data), a NA is assigned to this value. Table \@ref(tab:tbl-ind-head-CC) shows the top rows of the resulting dataframe.
+
+```{r d.CC-index-generation, echo = F,warning = F}
+# Rename the last 5 columns to A, B, C, D, E
+colnames(d.CC)[(ncol(d.CC)-4):ncol(d.CC)] <- c("A", "B", "C", "D", "E")
+
+# Compute Index dynamically based on available (non-NA) values
+d.CC$IndexCC <- rowSums(d.CC[, c("A", "B", "C", "D", "E")] == d.CC[11,4], na.rm = TRUE) / 
+                 rowSums(!is.na(d.CC[, c("A", "B", "C", "D", "E")]), na.rm = TRUE)
+
+d.CC$IndexCC[is.nan(d.CC$IndexCC)] <- NA # #converting 0 data point to NA
+
+d.CC$Country <- countrycode(d.CC$Country, "country.name", "iso3c")
+
+d.CC <- na.omit(d.CC, cols = "Country")
+# Above Warnings Countries are not found in the Adoption set, can be safely removed
+
+d.CC <- d.CC %>% select(Country, Year, IndexCC) # rearrannging and removing rows
+
+
+d.CC <- d.CC %>%
+  pivot_wider(names_from = Year, values_from = IndexCC) %>%  # make wide format
+  mutate(`2023` = NA)#, `2024` = NA)
+```
+
+```{r tbl-ind-head-CC, echo = F}
+kable(head(d.CC), caption = "Head of Table with Capital Controls Index",
+      row.names = F)
+```
+
+## Data Preparation
+
+This section discusses how the data is treated to prepare it for analysis.
+
+### Removing Countries not in *d.Adoption*
+
+Countries without a dependent variable are removed in this step, since without a dependent variable nothing of insight can be gained, even if all the dependent variables are there. Due to lacking independent variable data, the value for Taiwan is also removed.
+
+```{r removing-irrelevant-countries, echo = F, message = F, warning = F, include = F }
+# Extract unique country names from d.Adoption
+relevant_countries <- unique(d.Adoption$Country)
+
+# List of original dataframes
+IV_data <- list(
+  d.CC = d.CC, 
+  d.Corruption = d.Corruption, 
+  d.ED = d.ED, 
+  d.GDP = d.GDP, 
+  d.GDS = d.GDS, 
+  d.Inflation = d.Inflation, 
+  d.RR = d.RR
+)
+
+# Find missing countries for each dataset
+IV_countries <- lapply(IV_data, function(df) unique(df$Country))
+missing_countries <- lapply(IV_countries, function(countries) setdiff(relevant_countries, countries))
+
+# Print missing countries for each dataset
+for (name in names(missing_countries)) {
+  cat("\nMissing countries in", name, ":\n")
+  print(missing_countries[[name]])
+}
+
+# Find countries that are missing in **any** dataset
+all_missing_countries <- unique(unlist(missing_countries))
+
+cat("\nCountries in d.Adoption but missing in at least one dataset:\n")
+print(all_missing_countries)
+
+# Apply filtering and overwrite original dataset names
+filtered_datasets <- lapply(IV_data, function(df) {
+  df[df$Country %in% relevant_countries, , drop = FALSE]
+})
+
+# Assign filtered datasets back to their original names in the environment
+list2env(filtered_datasets, envir = .GlobalEnv)
+```
+
+### Removing Year 2024 from *d.Adoption*
+
+Since there is no data for any of the other indicators for the year 2024 in a structured and accessible format, the year 2024 is removed from *d.Adoption*. As entire columns of data would be missing, there is no way to sensibly impute them and get the required variance.
+
+```{r removing 2024, echo = F}
+d.Adoption <- d.Adoption %>% select(-'2024')
+```
+
+### Manually Adding Missing Data
+
+Due to the already small data size, where possible, missing independent variables are filled in manually. The following information was added in this manner. While this approach is not consistent throughout and therefore limits practical replicability, it offers the benefit of retaining slightly increased data quantity.
+
+-   Argentina Inflation Rate 2018-2022 [@statistaArgentinaInflation]
+
+-   Nigeria Gross Domestic Savings (% of GDP) 2018-2021 [@nigeria]
+
+-   Belgium, Canada, France, Ireland, Spain External Debt (% of GDP) 2018-2023 [@ceicdata2025]
+
+```{r manual-impute-argentina, echo = F}
+NGA_GDS <- c("2019" = 19.83, "2020" = 27.38, "2021" = 32.73, "2022" = NA, "2023" = NA)#, "2024" = NA)
+
+NGA_row <- which(d.GDS$Country == "NGA")
+d.GDS[NGA_row, 2:ncol(d.GDS)] <- NGA_GDS  # Assuming the first column is "Country"
+
+Arg_Inf <- c("2019" = 53.55, "2020" = 42.02, "2021" = 48.41, 
+             "2022" = 72.43, "2023" = 133.49)#, "2024" = NA)
+
+arg_row <- which(d.Inflation$Country == "ARG")
+d.Inflation[arg_row, 2:ncol(d.Inflation)] <- Arg_Inf  # Assuming the first column is "Country"
+
+new_countries_External_Debt <- tibble(
+  Country = c("BEL", "CAN", "FRA", "IRL", "ESP"),
+  `2019` = c(257.579, 134.234, 235.061, 742.138, 169.725),
+  `2020` = c(268.416, 149.077, 265.191, 702.699, 200.181),
+  `2021` = c(260.193, 143.214, 258.592, 677.751, 193.562),
+  `2022` = c(237.91, 134.904, 244.258, 577.158, 172.805),
+  `2023` = c(237.68, 143.661, 245.047, 563.897, 165.481)#,
+  #`2024` = c(NA, NA, NA, NA, NA)
+)
+
+# Add only missing countries
+existing_countries <- d.ED$Country
+missing_countries <- new_countries_External_Debt %>% filter(!Country %in% existing_countries)
+
+# Append missing countries to d.GDS
+d.ED <- bind_rows(d.ED, missing_countries)
+```
+
+### Missing Data Structure
+
+Since not all data can be added manually due to lacking reliable and consistent data sources, alternative techniques must be employed. The type of way that missing values are dealt with depends on the quantity and structure of missing data. A standard approach is to say that any dataset having less than 5% missing can be treated with univariate imputation, such as adding the mean of a row or column for a missing piece of data. However, the structure of the missing data plays a role too. For this reason a Missing Completely at Random (MCAR) is performed [@schwarz2024]. Table \@ref(tab:tblMCAR) below shows the result of this test. The results indicate that univariate imputation can be used for all variables since the hypothesis, that the data is not MCAR is either rejected at the 5% level or the number of missing values is less than 5%. The percentage missing applies only to the numeric columns, so the inclusion of country names in the table do not skew downwards the proportion of missing numbers.
+
+```{r fig-MCAR-fun, echo = F, message = F, warning=F}
+
+# Function to run MCAR tests and format results with improved headers
+run_mcar_tests <- function(...) {
+  dfs <- list(...)
+  df_names <- sapply(substitute(list(...))[-1], deparse)  # Get dataframe names
+  
+  results <- data.frame(
+    `Dataset` = character(),
+    `Test Statistic` = character(),  # More descriptive header
+    `Degrees of Freedom` = character(),
+    `P-Value` = character(),  # Improved readability
+    `Missing Patterns` = character(),
+    `Missing Percent` = character(),  # More readable title
+    `Significance Level` = character(),  # Full description
+    stringsAsFactors = FALSE
+  )
+
+  for (i in seq_along(dfs)) {
+    df <- dfs[[i]]
+    df_name <- df_names[i]
+
+    # Calculate missing percentage only for numeric fields
+    numeric_cols <- df[, sapply(df, is.numeric), drop = FALSE]  # Select numeric columns
+    total_numeric_values <- length(numeric_cols) * nrow(df)  # Total numeric data points
+    total_missing_values <- sum(is.na(numeric_cols))  # Count missing values in numeric columns
+    missing_percent <- round((total_missing_values / total_numeric_values) * 100, 2)
+
+    # Check for missing values
+    if (sum(is.na(df)) == 0) {
+      results <- rbind(results, data.frame(
+        `Dataset` = df_name,
+        `Test Statistic` = "-",
+        `Degrees of Freedom` = "-\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0No",
+        `P-Value` = "Missing",
+        `Missing Patterns` = "Values",
+        `Missing Percent` = "0.00",  # No missing values
+        `Significance Level` = "-"
+      ))
+    } else {
+      test_result <- naniar::mcar_test(df)
+      test_result <- as.data.frame(test_result)
+      p_value <- test_result$p.value[1]
+
+      # Determine significance level
+      significance <- case_when(
+        p_value < 0.01  ~ "Highly Significant",
+        p_value < 0.05  ~ "Significant",
+        TRUE            ~ "Not significant"
+      )
+      
+      results <- rbind(results, data.frame(
+        `Dataset` = df_name,
+        `Test Statistic` = round(test_result$statistic[1], 2),
+        `Degrees of Freedom` = test_result$df[1],
+        `P-Value` = round(p_value, 4),
+        `Missing Patterns` = test_result$missing.patterns[1],
+        `Missing Percent` = paste0(missing_percent),
+        `Significance Level` = significance
+      ))
+    }
+  }
+  
+  # Print results in a clean table using kable
+  colnames(results) <- c("Dataset", "Test Statistic", "Degrees of Freedom", 
+                       "P-Value", "Missing Patterns", "Proportion Missing (%)", 
+                       "Significance Level")
+  
+  kable(results, caption = "MCAR Test Results", digits = 4, format = "markdown")
+}
+
+library(dplyr)
+library(naniar)
+library(knitr)
+library(kableExtra)
+
+run_mcar_tests1 <- function(...) {
+  dfs <- list(...)
+  df_names <- sapply(substitute(list(...))[-1], deparse)  # Get dataframe names
+  
+  results <- data.frame(
+    `Dataset` = character(),
+    `Test Statistic` = character(),  # More descriptive header
+    `Degrees of Freedom` = character(),
+    `P-Value` = character(),  # Improved readability
+    `Missing Patterns` = character(),
+    `Missing Percent` = character(),  # More readable title
+    `Significance Level` = character(),  # Full description
+    stringsAsFactors = FALSE
+  )
+
+  for (i in seq_along(dfs)) {
+    df <- dfs[[i]]
+    df_name <- df_names[i]
+
+    # Calculate missing percentage only for numeric fields
+    numeric_cols <- df[, sapply(df, is.numeric), drop = FALSE]  # Select numeric columns
+    total_numeric_values <- length(numeric_cols) * nrow(df)  # Total numeric data points
+    total_missing_values <- sum(is.na(numeric_cols))  # Count missing values in numeric columns
+    missing_percent <- round((total_missing_values / total_numeric_values) * 100, 2)
+
+    # Check for missing values
+    if (sum(is.na(df)) == 0) {
+      results <- rbind(results, data.frame(
+        `Dataset` = df_name,
+        `Test Statistic` = "-",
+        `Degrees of Freedom` = "-\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0No",
+        `P-Value` = "Missing",
+        `Missing Patterns` = "Values",
+        `Missing Percent` = "0.00",  # No missing values
+        `Significance Level` = "-"
+      ))
+    } else {
+      test_result <- naniar::mcar_test(df)
+      test_result <- as.data.frame(test_result)
+      p_value <- test_result$p.value[1]
+
+      # Determine significance level
+      significance <- case_when(
+        p_value < 0.01  ~ "Highly Significant",
+        p_value < 0.05  ~ "Significant",
+        TRUE            ~ "Not significant"
+      )
+      
+      results <- rbind(results, data.frame(
+        `Dataset` = df_name,
+        `Test Statistic` = round(test_result$statistic[1], 2),
+        `Degrees of Freedom` = test_result$df[1],
+        `P-Value` = round(p_value, 4),
+        `Missing Patterns` = test_result$missing.patterns[1],
+        `Missing Percent` = paste0(missing_percent),
+        `Significance Level` = significance
+      ))
+    }
+  }
+  
+  # Rename columns for better readability
+  colnames(results) <- c("Dataset", "Test Statistic", "Degrees of Freedom", 
+                         "P-Value", "Missing Patterns", "Proportion Missing (%)", 
+                         "Significance Level")
+
+  # Print results using kable with column width adjustments
+  kable(results, caption = "MCAR Test Results", digits = 4, format = "latex", booktabs = TRUE) %>%
+  kable_styling(full_width = FALSE, latex_options = c("hold_position", "scale_down")) %>%
+  column_spec(6, width = "4cm") %>%  # Slightly reduce "Proportion Missing (%)"
+  column_spec(7, width = "5cm")  # Keep "Significance Level" but not too large
+}
+
+```
+
+```{r tblMCAR, echo = F, fig.cap= "MCAR Test on Datasets (excluding d.CC)", warning=F}
+run_mcar_tests1(d.Adoption, d.Inflation, d.GDS, d.GDP, d.RR, d.ED)
+```
+
+The MCAR test could not be performed for the capital controls data (*d.CC*) as there is an entire column missing, as can be seen in Figure \@ref(fig:md-dCC), which is incompatible with the algorithm of the MCAR test. For this reason, in the interest of maintaining the highest reasonable data quantity, the 2022 (most recent) value of the *d.CC* will be imputed in for the 2023 value of *d.CC*. For a detailed guide on the interpretation of the MD Pattern figure, please see \@ref(interpretation-of-missing-data-pattern-figure).
+
+```{r md-dCC, echo = F, fig.cap = "Missing Pattern of d.CC", fig.width=5, fig.height=4, message= F,  results="hide"}
+md.pattern(d.CC[,-1])
+```
+
+```{r imputing dcc, echo = F, message= F, fig.width=5, fig.height=4,  results="hide"}
+d.CC[[ncol(d.CC)]] <- d.CC[[ncol(d.CC) - 1]]
+remove(filtered_datasets,IV_countries,IV_data,lit_data_sources,world,new_countries_External_Debt)
+```
+
+### Imputing Missing Data
+
+Since the missing data is of a structure which can use univariate imputation, this is done. The assumption behind the way that the imputations are done is that the country in which an observation happens is more important than the year in which it happens. This it is preferred to impute using the country's available data over the year's available data. Due to this dataset taking place during the Covid-19 pandemic, it would not be suitable to just take a mean of all available years for a country. Instead, the average of the year before and after the missing data is used. If a datapoint is missing in the last year, only the previous [available]{.underline} year's data from that country is used. If a data point is missing in the first year, only the first [available]{.underline} year's data point of that country is used to impute. As can be seen in Figures \@ref(fig:md-Adoption) through Figure \@ref(fig:md-ED-GDP) in \@ref(appendix-2-missing-data-patterns), there are many cases where the missing pattern is not in between available data points and will rely on a single imputation. For the sake of brevity, this process is referred to as Nearest Average Imputation.
+
+To be exact, the following imputations imputations are performed:
+
+-   *d.Adoption* completed using Nearest Average Imputation.
+
+-   *d.Inflation* completed using Nearest Average Imputation.
+
+-   *d.GDS* completed using Nearest Average Imputation.
+
+-   No imputations required for *d.GDP* (complete data).
+
+-   No imputations required for *d.Corruption* (complete data).
+
+-   Average for all observations, separated by year, imputed for 1 country value in *d.RR*, as there were no values for any year for that country (United Arab Emirates). No other imputations had to be applied.
+
+-   No imputations required for *d.CC.*
+
+-   No imputations required for *d.ED.*
+
+With those changes, the data is ready for analysis. Please note, practically all datasets are ran through the algorithm and renamed with an "\_imp" suffix.
+
+```{r imputation-fun, echo = F}
+fill_na_with_nearest_avg <- function(df) {
+  # Compute column means (excluding 'Country' column), ignoring NA values
+  col_means <- colMeans(df[, -1], na.rm = TRUE)
+
+  for (i in 1:nrow(df)) {
+    row_values <- df[i, 2:ncol(df)]  # Extract numeric part of the row (excluding country column)
+
+    if (all(is.na(row_values))) {
+      # If all values are NA, replace with column means
+      df[i, 2:ncol(df)] <- col_means
+    } else {
+      for (j in 2:ncol(df)) { # Start from 2nd column to avoid modifying 'Country'
+        if (is.na(df[i, j])) {
+          prev_value <- NA
+          next_value <- NA
+          
+          # Find previous non-NA value safely
+          if (j > 2) {
+            prev_values <- na.omit(as.numeric(df[i, 2:(j-1)]))  # Convert to numeric vector
+            if (length(prev_values) > 0) {
+              prev_value <- prev_values[length(prev_values)]  # Last previous value
+            }
+          }
+          
+          # Find next non-NA value safely
+          if (j < ncol(df)) {
+            next_values <- na.omit(as.numeric(df[i, (j+1):ncol(df)]))  # Convert to numeric vector
+            if (length(next_values) > 0) {
+              next_value <- next_values[1]  # First next value
+            }
+          }
+
+          # Ensure `prev_value` and `next_value` are single numeric values
+          prev_exists <- !is.na(prev_value) && is.numeric(prev_value)
+          next_exists <- !is.na(next_value) && is.numeric(next_value)
+
+          # Fill NA using the nearest available values
+          if (prev_exists && next_exists) {
+            df[i, j] <- (prev_value + next_value) / 2  # Average of both nearest values
+          } else if (prev_exists) {
+            df[i, j] <- prev_value  # Use only the previous value
+          } else if (next_exists) {
+            df[i, j] <- next_value  # Use only the next value
+          }
+        }
+      }
+    }
+  }
+  return(df)
+}
+
+# Example usage:
+# df <- fill_na_with_nearest_avg(df)
+
+```
+
+```{r performing impuations, echo = F}
+# For repeatability, all datasets are still run through the algorithm
+d.Adoption_imp <- fill_na_with_nearest_avg(d.Adoption)
+d.Inflation_imp <- fill_na_with_nearest_avg(d.Inflation)
+d.GDS_imp <- fill_na_with_nearest_avg(d.GDS)
+d.GDP_imp <- fill_na_with_nearest_avg(d.GDP)
+d.Corruption_imp <- fill_na_with_nearest_avg(d.Corruption)
+d.RR_imp<-fill_na_with_nearest_avg(d.RR)
+d.CC_imp<-fill_na_with_nearest_avg(d.CC)
+d.ED_imp <- fill_na_with_nearest_avg(d.ED)
+
+# Save as _UNimp the unimputed sets
+d.Adoption_UNimp <- d.Adoption
+d.Inflation_UNimp <- d.Inflation
+d.GDS_UNimp <- d.GDS
+d.GDP_UNimp <- d.GDP
+d.Corruption_UNimp <- d.Corruption
+d.RR_UNimp <- d.RR
+d.CC_UNimp <- d.CC
+d.ED_UNimp <- d.ED
+
+```
+
+### Interpretation of Missing Data Pattern Figure
+
+The figure consists of horizontal bars, one for each of the configurations of missing data. Where blue represents a present year and red an absent year. The top headings represent the row headings. The number to the left of each bar represents the number of times a configuration of missing data is represented in the dataset. The number on the right represents the number of missing data points in a single observation, for a particular configuration of missing data. The number at the bottom represents the number of times a feature is missing across the dataset. The number at the bottom right represents the total number of missing variables for each dataset.
+
+\newpage
+
+# Exploratory Data Analysis
+
+This section makes exploratory analysis of the data to both understand descriptive statics and to prepare for inferential statistics by checking if assumptions for certain models are met. Please note, this entire section is performed on the imputed data.
+
+## Box and Whisker Plots and Histograms
+
+The Box and Whisker Plots show not only summary statistics like the median, Interquartile Range (IQR) and outliers for each variable graphically, the separating the plots across years, changes can easily be interpreted visually. The plots show that generally, the data is close to normally distributed with either a right skew or outliers on the right. The presence of this type of structure implies a log-transformation could be applied to improve the fit in statistical models assuming normally distributed data.
+
+```{r, echo = F}
+plot_summary_boxplots <- function(data, title = NULL) {
+  library(ggplot2)
+  library(tidyr)
+  library(dplyr)
+  
+  # Convert data to long format
+  data_long <- pivot_longer(data, cols = everything(), names_to = "Year", values_to = "Value")
+  
+  # Calculate number of NA's per year
+  na_counts <- data_long %>%
+    group_by(Year) %>%
+    summarise(NAs = sum(is.na(Value)))
+  
+  # Create boxplot
+  p <- ggplot(data_long, aes(x = Year, y = Value)) +
+    geom_boxplot(outlier.color = "lightblue", outlier.shape = 16, na.rm = TRUE) +
+    theme_minimal() +
+    labs(x = "Year", y = "Value") +
+    geom_text(data = na_counts, aes(x = Year, y = max(data_long$Value, na.rm = TRUE) + 5, label = paste0("NA: ", NAs)), 
+              color = "black", size = 4) +  # Adds NA count above each box
+    theme(panel.grid.major.x = element_blank(),  # Remove vertical gridlines
+          panel.grid.minor.x = element_blank())  # Remove minor vertical gridlines
+
+  # Conditionally add title
+  if (!is.null(title)) {
+    p <- p + ggtitle(title)
+  }
+  
+  print(p)
+}
+plot_summary_histograms <- function(data, bins = 50) {
+  library(ggplot2)
+  library(tidyr)
+  
+  # Convert data to long format
+  data_long <- pivot_longer(data, cols = everything(), names_to = "Year", values_to = "Value")
+
+  # Create histogram plots with customizable bins
+  ggplot(data_long, aes(x = Value)) +
+    geom_histogram(bins = bins, fill = "gray50", color = "black", alpha = 0.8) +  # Neutral gray bars
+    facet_wrap(~ Year, scales = "free") +  # Separate histograms by year
+    theme_minimal() +
+    labs(x = "Value", y = "Frequency") +
+    theme(legend.position = "none")  # Remove legend
+}
+
+plot_summary_boxplots <- function(data, title = NULL) {
+  library(ggplot2)
+  library(tidyr)
+
+  # Convert data to long format
+  data_long <- pivot_longer(data, cols = everything(), names_to = "Year", values_to = "Value")
+
+  # Calculate min and max to adjust y-axis
+  min_val <- min(data_long$Value, na.rm = TRUE)
+  max_val <- max(data_long$Value, na.rm = TRUE)
+  
+  ggplot(data_long, aes(x = Year, y = Value)) +
+    geom_boxplot() +
+    theme_minimal() +
+    labs(title = title, x = "Year", y = "Value") +
+    scale_y_continuous(limits = c(min_val - 0.1 * abs(min_val), max_val + 0.1 * abs(max_val)))  # Adjusts scale
+}
+
+```
+
+**Adoption Data**
+
+Figure \@ref(fig:bw-Adoption) shows the distribution using a Box and Whisker plot of the cryptocurrency adoption data over the period studied. There seems to be an upwards trend in the median of the adoption of cryptocurrency in the available year. At the same, the number of extreme outliers peaked in 2021 and 2022, with only one country having more than 36% adoption in 2023. The distribution is approaching normal, but long-tailed on the right due to the outliers at the upper end of the range. Figure \@ref(fig:hist-Adoption) further confirms the distribution approaches normal with a long rail tail. While there does appear to be a bimodal distribution for the year 2019, when looking at a histogram of all the years together (not shown), this is not the case. Due to the extensive outliers at the top end of the range, this distributio can be called **right long tailed**.
+
+\FloatBarrier
+
+```{r bw-Adoption, echo = F, fig.width=4, fig.height=3, fig.cap="Box and Whisker Plots for d.Adoption"}
+plot_summary_boxplots(d.Adoption_imp[,-1])
+```
+
+```{r hist-Adoption, echo = F, message = F, fig.width=4, fig.height=3, fig.cap="Histograms for d.Adoption"}
+plot_summary_histograms(d.Adoption_imp[,-1],20)
+```
+
+```{=tex}
+\FloatBarrier
+\clearpage
+```
+**Inflation**
+
+Figure \@ref(fig:bw-Inflation) shows that the global inflation slightly increased over the period of the study until 2022 and then decreased in the final year. Due to the small size of the box and whisker plots, the distribution is hard to determine. Figure \@ref(fig:hist-inf) provides histograms, which allow the **long right tail** in the data to be seen, again due to the outliers at the top of the range.
+
+\FloatBarrier
+
+```{r bw-Inflation, echo = F, fig.width=4, fig.height=3, fig.cap="Box and Whisker Plots for d.Inflation"}
+plot_summary_boxplots(d.Inflation_imp[,-1], title = NULL)
+```
+
+\FloatBarrier
+
+```{r hist-inf, echo = F, message = F, fig.width=4, fig.height=3, fig.cap="Histograms for d.Inflation"}
+plot_summary_histograms(d.Inflation_imp[,-1])
+```
+
+```{=tex}
+\FloatBarrier
+\clearpage
+```
+**Gross Domestic Savings**
+
+Figure \@ref(fig:bw-GDS) shows that the median, outliers, and distribution of Gross Domestic Savings (% of GDP) across the studied countries remained similar throughout the period studied. With the exception of very limited outliers, the data follows a **distribution** **approaching normal**. This is confirmed by the histograms in Figure \@ref(fig:hist-GDS).
+
+\FloatBarrier
+
+```{r bw-GDS, echo = F, fig.width=4, fig.height=3, fig.cap="Box and Whisker Plots for d.GDS"}
+plot_summary_boxplots(d.GDS_imp[,-1], title = NULL)
+```
+
+\FloatBarrier
+
+```{r hist-GDS, echo = F, message = F, fig.width=4, fig.height=3, fig.cap="Histograms for d.GDS"}
+plot_summary_histograms(d.GDS_imp[,-1], 20)
+```
+
+```{=tex}
+\FloatBarrier
+\clearpage
+```
+**Gross Domestic Product**
+
+Figure \@ref(fig:bw-GDP) shows that, similarly to the proxy for investment, the proxy for wealth remained similar in structure throughout the time period. However, there are two key differences. In the wealth proxy, there are no outliers above 1.5 times the Interquartile Range. A second difference, which can be seen in Figure \@ref(fig:hist-GDP), is that the distribution is twin-peaked for all years except 2023. Overwhelmingly however, the data is **right skewed.** A histogram of all the data together (not shown), confirms this.
+
+\FloatBarrier
+
+```{r bw-GDP, echo = F, fig.width=4, fig.height=3, fig.cap="Box and Whisker Plots for d.GDP"}
+plot_summary_boxplots(d.GDP_imp[,-1], title = NULL)
+```
+
+\FloatBarrier
+
+```{r hist-GDP, echo = F, message = F, fig.width=4, fig.height=3, fig.cap="Histograms for d.GDP"}
+plot_summary_histograms(d.GDP_imp[,-1],15)
+```
+
+```{=tex}
+\FloatBarrier
+\clearpage
+```
+**Corruption**
+
+Figure \@ref(fig:bw-Corruption) shows that while there are no extreme outliers in *d.Corruption*, there is a right skew in the data. This is further confirmed by Figure \@ref(fig:hist-Corruption), which shows that the distribution is **right skewed**. Again a histogram (not shown) of all the years together confirms this.
+
+\FloatBarrier
+
+```{r bw-Corruption, echo = F, fig.width=4, fig.height=3, fig.cap="Box and Whisker Plots for d.Corruption"}
+plot_summary_boxplots(d.Corruption_imp[,-1], title = NULL)
+```
+
+\FloatBarrier
+
+```{r hist-Corruption, echo = F, message = F, fig.width=4, fig.height=3, fig.cap="Histograms for d.Corruption"}
+plot_summary_histograms(d.Corruption_imp[,-1], 20)
+```
+
+```{=tex}
+\FloatBarrier
+\clearpage
+```
+**Remittances**
+
+Figures \@ref(fig:bw-RR) and \@ref(fig:hist-RR) shows that there are both outliers at the positive end of the data is **right skewed**.
+
+\FloatBarrier
+
+```{r bw-RR, echo = F, fig.width=4, fig.height=3, fig.cap="Box and Whisker Plots for d.RR"}
+plot_summary_boxplots(d.RR_imp[,-1], title = NULL)
+```
+
+\FloatBarrier
+
+```{r hist-RR, echo = F, message = F, fig.width=4, fig.height=3, fig.cap="Histograms for d.RR"}
+plot_summary_histograms(d.RR_imp[,-1], 20)
+```
+
+```{=tex}
+\FloatBarrier
+\clearpage
+```
+**Capital Controls**
+
+Figure \@ref(fig:bw-CC) and Figure \@ref(fig:hist-CC) show the distribution across years for the capital controls variable. There is a right skew.
+
+\FloatBarrier
+
+```{r bw-CC, echo = F, fig.width=4, fig.height=3, fig.cap="Box and Whisker Plots for d.CC"}
+plot_summary_boxplots(d.CC_imp[,-1], title = NULL)
+```
+
+\FloatBarrier
+
+```{r hist-CC, echo = F, message = F, fig.width=4, fig.height=3, fig.cap="Histograms for d.CC"}
+plot_summary_histograms(d.CC_imp[,-1],5)
+```
+
+```{=tex}
+\FloatBarrier
+\clearpage
+```
+**External Debt to GDP**
+
+Figure \@ref(fig:bw-ED-GDP) and Figure \@ref(fig:hist-ED-GDP) show that the distribution in amongst the individual years is close to normal with a long tail on the right caused by outliers. However, an evaluation of all the years together as shown in Figure \@ref(fig:hist-ED-all-yrs) shows that in fact, the distribution is **right skewed**.
+
+\FloatBarrier
+
+```{r bw-ED-GDP, echo = F, fig.width=4, fig.height=3, fig.cap="Box and Whisker Plots for d.ED"}
+plot_summary_boxplots(d.ED_imp[,-1], title = NULL)
+```
+
+\FloatBarrier
+
+```{r hist-ED-GDP, echo = F, message = F, fig.width=4, fig.height=3, fig.cap="Histograms for d.ED"}
+plot_summary_histograms(d.ED_imp[,-1],20)
+```
+
+```{r hist-ED-all-yrs, echo = F, message = F, fig.width=4, fig.height=3, fig.cap="Histogram for d.ED (all years)", eval = F}
+
+# code for histogram here
+```
+
+```{=tex}
+\FloatBarrier
+\clearpage
+```
+## Overview Distribution
+
+Table \@ref(tab:overview-skew-no-transformations) shows an overview of the distributions of the untransformed variables.
+
+```{r overview-skew-no-transformations, echo = F}
+# Load required package
+library(knitr)
+
+# Create a data frame with the given variables and distributions
+distribution_table <- data.frame(
+  Variable = c("Adoption", "Inflation", "GDS", "GDP", "CC", "RR", "ED", "ED"),
+  Distribution = c("long right tail", "long right tail", "quasi-normal", "right skew", 
+                   "right skew", "right skew", "quasi-normal", "right skew")
+)
+
+# Print the table using kable with a caption
+kable(distribution_table, caption = "Overview of Distributions (No Transformations)")
+```
+
+## Correlation Matrix
+
+```{r creating-long-func, echo = F}
+convert_to_long <- function(datasets) {
+  for (dataset_name in datasets) {
+    if (exists(dataset_name, envir = .GlobalEnv)) {
+      dataset <- get(dataset_name, envir = .GlobalEnv)
+      
+      # Extract the part of the dataset name after "d." and before "_imp"
+      value_name <- gsub("^d\\.|_imp$", "", dataset_name)
+      
+      long_name <- paste0(dataset_name, "_long")
+      
+      long_data <- dataset %>% 
+        pivot_longer(cols = -Country,  
+                     names_to = "Year", 
+                     values_to = value_name) %>%  
+        mutate(Year = trimws(Year)) %>%  # Remove leading/trailing spaces
+        mutate(Year = gsub("[^0-9]", "", Year)) %>%  # Remove non-numeric characters
+        mutate(Year = as.integer(Year))  # Convert cleaned Year to integer
+
+      assign(long_name, long_data, envir = .GlobalEnv)
+    } else {
+      message(paste("Dataset", dataset_name, "does not exist in the environment."))
+    }
+  }
+}
+```
+
+```{r, applying-long-func, echo = F}
+dataset_imp_list <- c( "d.CC_imp","d.Corruption_imp","d.ED_imp", "d.GDP_imp", "d.GDS_imp", "d.Inflation_imp","d.RR_imp", "d.Adoption_imp")
+convert_to_long(dataset_imp_list)
+```
+
+```{r left-join, echo = F}
+d.panel <- d.Adoption_imp_long
+d.panel<-d.panel %>% 
+  left_join(d.Inflation_imp_long, by= c( "Country","Year")) %>% 
+  left_join(d.GDS_imp_long, by= c( "Country","Year")) %>% 
+  left_join(d.GDP_imp_long, by= c( "Country","Year")) %>% 
+  left_join(d.Corruption_imp_long, by= c( "Country","Year")) %>% 
+  left_join(d.RR_imp_long, by= c( "Country","Year")) %>% 
+  left_join(d.CC_imp_long, by= c( "Country","Year")) %>% 
+  left_join(d.ED_imp_long, by= c( "Country","Year")) 
+
+# I performed "Stichproben" for these to check the aggregation is in line with the original data.
+
+```
+
+```{r corr-heatmap-create, echo = F}
+d.panel_numeric <- subset(d.panel, select = -c(Country, Adoption))
+corr_matrix <- cor(d.panel_numeric)
+melted_corr<-melt(corr_matrix)
+
+#ggplot(melted_corr, aes(x=Var1, y=Var2, fill=value)) +
+#  geom_tile() +
+#  scale_fill_gradient2(low = "blue", mid = "white", high = "red", midpoint = 0, 
+#                       limits = c(-1, 1)) +  # Set limits to force full color range
+#  theme_minimal() +
+#  labs(title="Correlation Heatmap", fill="Correlation") +
+#  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+
+# Create the heatmap with correlation values
+corr_heatmap<-ggplot(melted_corr, aes(x=Var1, y=Var2, fill=value)) +
+  geom_tile() +  # Heatmap tiles
+  geom_text(aes(label = round(value, 2)), color = "black", size = 4) +  # Add correlation values
+  scale_fill_gradient2(low = "blue", mid = "white", high = "red", midpoint = 0, 
+                       limits = c(-1, 1)) +  # Ensure color scale is -1 to 1
+  theme_minimal() +
+  labs(fill="Correlation") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+melted_corr_wo1 <- melted_corr[melted_corr$value != 1, ]
+med_corr <- round(median(abs(melted_corr_wo1$value)),2)
+max_corr <- round(max(abs(melted_corr_wo1$value)),2)
+```
+
+A correlation matrix displays visually a relationship between two continuous variables. It is important to evaluate this, since an assumption behind many some statistical models, particularily regression is that there is no **multicollinearity** [@statisticssolutions]. Figure \@ref(fig:corr-heatmap-show) shows a correlation heatmap for independent variables, the numbers inside of the cells (as well as their coloring, as indicated on the heatmap) shows the pearson correlation coefficient between two independent variables in the datasets. The variables associates with each correlation can be identified by looking at the row and column of that cell. The plot shows that most correlations are weak to moderate, with a median absolute value of correlations equal to `r med_corr` and a maximum equal to `r max_corr` .[^2] This indicates that multicollinearity will not be a problem since even the largest absolute value is below the 0.8 threshold specified in @statisticssolutions. The diagonal values of 1 represent to correlation of each variable with itself, which is not directly relevant. Please note, each correlation is represented twice (one with a given variable on the x-axis and once on the y-axis.
+
+[^2]: The summary statistics present here were calculated without the correlation of variables with themselves (diagonal 1s in Figure \@ref(fig:corr-heatmap-show))
+
+```{r corr-heatmap-show, echo = F, fig.cap="Correlation Heatmap of Independent Variables"}
+corr_heatmap
+```
+
+## Power Transformations
+
+\newpage
+
+# Results
+
+This section discussed the statistical results of the models.
+
+## Model 1: Linear Regression No Transformation
+
+```{r, echo = F}
+m.1 <- lm(Adoption~Year+Inflation+GDS+GDP+Corruption+RR+CC+ED, data = d.panel)
+```
+
+```{r model1-presentation, echo = F}
+s.1 <- tidy(m.1) %>%
+  mutate(
+    term = gsub("_", "\\\\_", term),  # Escape underscores for LaTeX
+    estimate = sprintf("%.2f", estimate),  # 2 decimal places
+    std.error = sprintf("%.2f", std.error),  # 2 decimal places
+    statistic = sprintf("%.2f", statistic),  # 2 decimal places
+    p.value = sprintf("%.4f", p.value),  # 4 decimal places
+    significance = case_when(
+      p.value < 0.01 ~ "***",
+      p.value < 0.05 ~ "**",
+      p.value < 0.1  ~ "*",
+      TRUE ~ ""
+    ),
+    estimate = paste0(estimate, significance)  # Append stars to estimates
+  ) %>%
+  select(-significance)  # Remove extra column (already appended to estimate)
+
+# Generate formatted LaTeX table
+kable(s.1, caption = "Model 1 Summary", format = "latex", booktabs = TRUE, escape = FALSE) %>%
+  kable_styling(latex_options = c("hold_position", "booktabs"))
+
+
+
+```
+
+```{r model1predres, echo = F, fig.cap="Model 1: Scatterplot Showing Predicted vs. Residuals", results = "asis", fig.width=5, fig.height=4}
+
+# Create a data frame with predictions and residuals
+df <- data.frame(
+  Predicted = predict(m.1),
+  Residuals = residuals(m.1)
+)
+
+# Generate the ggplot
+ggplot(df, aes(x = Predicted, y = Residuals)) +
+  geom_point() +  # Scatter plot
+  geom_hline(yintercept = 0, linetype = "dashed", color = "lightblue", size = 1) +  # Horizontal line at 0
+  ylim(-30,30)+
+  labs(x = "Predicted Values", y = "Residuals") +
+  theme_minimal()
+```
+
+Linear Regression models are one of the simplest inferential statistical tools out there. Nevertheless they can provide detailed information on the relationships between variables. For the initial model, the temporal aspect (year) is modeled as continuous variable inside with it's own coefficient. As was seen in Figure \@ref(fig:bw-Adoption), the median adoption increases over the time period under observation, indicating that the effect of the year could be linear. Table \@ref(tab:model1-presentation) shows the results of this model.
+
+[[**DESCRIBE MODEL RESULTS HERE\*\***]{.underline}]\*\*
+
+Figure \@ref(fig:model1predres) shows the scatterplot of the values predicted by the model versus the residuals.
+
+## Model 2: Linear Regression Transformations
+
+## Model 3: Fixed Effects
+
+## Model 4: Random Effects
+
+\newpage
+
+# Discussion
+
+## Summary Key Findings
+
+## Comparison With Existing Literature
+
+## Strengths of Approach
+
+## Weaknesses of Approach
+
+## Future Research
+
+## Practical and Policy Implications
+
+\newpage
+
+# Conclusion
+
+\newpage
+
+# Bibliography (APA 7\textsuperscript{th})
+
+::: {#refs}
+:::
+
+\newpage
+
+# Appendix 1: Structured List of Literature
+
+This Appendix gives a visual overview of the two main important fields of academic literature for this paper.
+
+## Literature Area 1: Drivers of Currency Substitution
+
+Table \@ref(tab:litreviewCS) below shows the overview of the key literature on currency substitution and in relation to this research. It is a visual representation of the text in section \@ref(literature-review-currency-substitution).
+
+\FloatBarrier
+
+```{r tab:litreviewCS, echo=FALSE, results='asis', fig.pos="H"}
+cat("
+\\begin{table}[ht]
+\\centering
+\\includegraphics[width=0.9\\linewidth]{review_CS.png}
+\\caption{Visual Summary Currency Substitution Literature}
+\\label{tab:litreviewCS}
+\\end{table}
+")
+```
+
+\FloatBarrier
+
+\newpage
+
+## Literature Area 2: Drivers of Cryptocurrency Adoption
+
+Table \@ref(tab:litreviewCA) below shown the overview of the key literature on the adoption of cryptocurrencies in relation to this research. It is a graphical representation of the text in section \@ref(literature-review-adoption-of-cryptocurrency)
+
+\FloatBarrier
+
+```{r tab:litreviewCA, echo=FALSE, results='asis', fig.pos="H"}
+cat("
+\\begin{table}[ht]
+\\centering
+\\includegraphics[width=0.9\\linewidth]{review_bbtc.png}
+\\caption{Visual Summary Cryptocurrency Adoption Literature}
+\\label{tab:litreviewCA}
+\\end{table}
+")
+```
+
+\FloatBarrier
+
+\newpage
+
+# Appendix 2: Missing Data Patterns
+
+This section shows the Missing patterns for the pre-imputation data of all variables with the exception of *d.CC*, as this was already presented in the section \@ref(missing-data-structure). Please see \@ref(interpretation-of-missing-data-pattern-figure) for a guide on how to interpret the figure.
+
+\FloatBarrier
+
+```{r md-Adoption, echo = F, fig.cap="Missing Pattern d.Adoption", message= F,  results="hide", fig.width=5, fig.height=4}
+md.pattern(d.Adoption_UNimp[,-1])
+```
+
+```{r md-GDS, echo = F, fig.cap="Missing Pattern d.GDS", fig.width=5, fig.height=4, message= F,  results="hide"}
+md.pattern(d.GDS_UNimp[,-1])
+```
+
+```{r md-GDP, echo = F, fig.cap="Missing Pattern d.GDP", fig.width=5, fig.height=4, message= F,  results="hide"}
+md.pattern(d.GDP_UNimp[,-1])
+```
+
+```{r md-Corruption, echo = F, fig.width=5, fig.height=4, fig.cap="Missing Pattern d.Corruption", message= F,  results="hide"}
+md.pattern(d.Corruption_UNimp[,-1])
+```
+
+```{r md-RR, echo = F, fig.cap="Missing Pattern d.RR", fig.width=5, fig.height=4, message= F,  results="hide"}
+md.pattern(d.RR_UNimp[,-1])
+```
+
+```{r md-ED-GDP, echo=F, fig.cap="Missing Pattern d.ED", fig.width=5, fig.height=4, message = F, results = "hide"}
+md.pattern(d.ED_imp[,-1])
+```
+
+\FloatBarrier
+
+\clearpage
+
+\newpage
+
+# Appendix 3: AI Disclosure
+
+I made extensive use of AI, particularly ChatGPT for this project. The main, but not exhaustive uses were the following:
+
+-   Spelling / Reviewing and writing drafts of sections where I needed inspiration to get started.
+
+-   R Studio, Markdown and LaTex issues and code suggestions.
+
+-   Scanning Long Documents for parts that I needed.
+
+-   Methodology "Research", although I verified everything using proper academic sources.
+
+-   Cover Page: Used Canva's AI Image Generation to create the cover photo.
+
+\newpage
+
+# Appendix 4: GitHub Access
+
+This project and associated data can be found on the following public GitHub Repository: [INSERT GITHUB REPOSITORY LINK]
+
+```{r, eval = F, echo = F}
+
+
+plot_summary_boxplots <- function(data, title = NULL) {
+  library(ggplot2)
+  library(tidyr)
+  library(dplyr)
+  
+  # Convert data to long format
+  data_long <- pivot_longer(data, cols = everything(), names_to = "Year", values_to = "Value")
+  
+  # Convert Year to factor for ordering
+  data_long$Year <- factor(data_long$Year, levels = unique(data_long$Year))
+
+  # Calculate summary statistics
+  summary_stats <- data_long %>%
+    group_by(Year) %>%
+    summarise(
+      Median = median(Value, na.rm = TRUE),
+      Mean = mean(Value, na.rm = TRUE),
+      Q1 = quantile(Value, 0.25, na.rm = TRUE),
+      Q3 = quantile(Value, 0.75, na.rm = TRUE),
+      IQR = Q3 - Q1
+    )
+
+  # Identify outliers using 1.5 * IQR rule
+  outliers <- data_long %>%
+    left_join(summary_stats, by = "Year") %>%
+    filter(Value < Q1 - 1.5 * IQR | Value > Q3 + 1.5 * IQR)
+
+  # NA counts
+  na_counts <- data_long %>%
+    group_by(Year) %>%
+    summarise(NAs = sum(is.na(Value)))
+
+  # Define legend placement
+  legend_x <- max(as.numeric(data_long$Year)) + 1.5  # Shift text further right
+  symbol_x <- max(as.numeric(data_long$Year)) + 0.8  # Symbol placement
+  legend_y_top <- max(data_long$Value, na.rm = TRUE) - 5  # Top position
+
+  # Create the plot
+  p <- ggplot(data_long, aes(x = Year, y = Value)) +
+    # One-sided violin (left clipped)
+    geom_violin(fill = "#CBD5E0", alpha = 0.7, trim = TRUE, draw_quantiles = NULL) +  
+    
+    # Boxplot (without outliers)
+    geom_boxplot(width = 0.2, outlier.shape = NA, fill = "#4A5568", color = "#2D3748", alpha = 0.6) +
+    
+    # Median as black line
+    geom_segment(data = summary_stats, aes(x = Year, xend = Year, y = Median, yend = Median), color = "black", size = 1.5) +
+    
+    # Mean as dark blue dot
+    geom_point(data = summary_stats, aes(x = Year, y = Mean), color = "#2C5282", size = 3, shape = 18) + 
+    
+    # Outliers as grey dots
+    geom_point(data = outliers, aes(x = Year, y = Value), color = "#718096", size = 2, shape = 1) +
+
+    # NA Count Labels
+    geom_text(data = na_counts, aes(x = Year, y = max(data_long$Value, na.rm = TRUE) + 5, label = paste0("NA: ", NAs)), 
+              color = "black", size = 4) +
+    
+    # Custom Legend with Properly Aligned Text
+    annotate("text", x = legend_x - 0.3, y = legend_y_top, label = "Legend", fontface = "bold", size = 3.5, hjust = 0) +
+    
+    # Mean
+    annotate("point", x = symbol_x, y = legend_y_top - 4, color = "#2C5282", size = 3, shape = 18) +
+    annotate("text", x = legend_x, y = legend_y_top - 4, label = "Mean (Blue Diamond)", hjust = 0, size = 4) +
+    
+    # Median
+    annotate("segment", x = symbol_x - 0.2, xend = symbol_x + 0.2, y = legend_y_top - 8, yend = legend_y_top - 8, color = "black", size = 1.5) +
+    annotate("text", x = legend_x, y = legend_y_top - 8, label = "Median (Black Line)", hjust = 0, size = 4) +
+    
+    # IQR Boxplot
+    annotate("rect", xmin = symbol_x - 0.3, xmax = symbol_x + 0.3, ymin = legend_y_top - 12, ymax = legend_y_top - 16, fill = "#4A5568", alpha = 0.6) +
+    annotate("text", x = legend_x, y = legend_y_top - 14, label = "IQR (Grey Box)", hjust = 0, size = 4) +
+    
+    # Outliers
+    annotate("point", x = symbol_x, y = legend_y_top - 18, color = "#718096", size = 2, shape = 1) +
+    annotate("text", x = legend_x, y = legend_y_top - 18, label = "Outliers (Grey Circles)", hjust = 0, size = 4) +
+
+    theme_minimal() +
+    labs(x = "Year", y = "Value", title = title) +
+    theme(
+      legend.position = "none",  # Remove default legend
+      panel.grid.major.x = element_blank(),  # Remove vertical gridlines
+      panel.grid.minor.x = element_blank(),
+      plot.margin = margin(10, 150, 10, 10)  # <-- Increase right margin to prevent text cutoff
+    )
+
+  print(p)
+}
+
+```
+
+# Boxcox
+
+```{r, boxcox}
+library(MASS)
+
+# Run Box-Cox transformation and store results
+boxcox_result <- boxcox(lm(d.panel$GDS ~ 1), lambda = seq(-2, 2, 0.1), plotit = TRUE)
+
+# Extract lambda values (x-axis) and log-likelihood values (y-axis)
+lambda_vals <- boxcox_result$x
+log_lik_vals <- boxcox_result$y
+
+# Find the MLE of lambda (the one maximizing log-likelihood)
+lambda_mle <- lambda_vals[which.max(log_lik_vals)]
+
+# Compute the 95% confidence interval threshold (log-likelihood max - 0.5)
+ci_threshold <- max(log_lik_vals) - 0.5
+
+# Identify lambda values that fall within the confidence interval
+lambda_ci <- lambda_vals[log_lik_vals >= ci_threshold]
+
+# Compute the middle value of the confidence interval
+lambda_mid <- mean(range(lambda_ci))
+
+# Print results
+cat("MLE Lambda:", lambda_mle, "\n")
+cat("95% Confidence Interval:", range(lambda_ci), "\n")
+cat("Middle of Confidence Interval:", lambda_mid, "\n")
+
+
+```
+
+```{r, echo = F}
+
+
+
+# Apply Yeo-Johnson transformation without centering or scaling
+preProcess_model <- preProcess(d.panel, method = "YeoJohnson", center = FALSE, scale = FALSE)
+
+# View the transformation details
+print(preProcess_model)
+
+# Apply the transformation
+transformed_data <- predict(preProcess_model, d.panel)
+
+# Compare original vs transformed
+par(mfrow = c(1,2))
+hist(d.panel$Adoption, main = "Original Data", col = "lightblue", breaks = 20)
+hist(transformed_data$Adoption, main = "Transformed Data", col = "lightgreen", breaks = 20)
+
+```

@@ -1,0 +1,1606 @@
+{
+    "sources": [
+        {
+            "DOI": "10.1111/1468-0351.00117",
+            "URL": "https://onlinelibrary.wiley.com/doi/10.1111/1468-0351.00117",
+            "author": [
+                {
+                    "family": "Calvo",
+                    "given": "Guillermo A."
+                }
+            ],
+            "container-title": "Economics of Transition",
+            "id": "calvo2002",
+            "issue": "2",
+            "issued": {
+                "date-parts": [
+                    [
+                        2002,
+                        7
+                    ]
+                ]
+            },
+            "language": "en",
+            "page": "393-403",
+            "title": "On dollarization",
+            "type": "article-journal",
+            "volume": "10"
+        },
+        {
+            "DOI": "10.1016/j.jimonfin.2012.03.007",
+            "URL": "https://linkinghub.elsevier.com/retrieve/pii/S0261560612000721",
+            "author": [
+                {
+                    "family": "Vieira",
+                    "given": "FabrC-cio A.C."
+                },
+                {
+                    "family": "Holland",
+                    "given": "MC!rcio"
+                },
+                {
+                    "family": "Resende",
+                    "given": "Marco F."
+                }
+            ],
+            "container-title": "Journal of International Money and Finance",
+            "id": "vieira2012",
+            "issue": "6",
+            "issued": {
+                "date-parts": [
+                    [
+                        2012,
+                        10
+                    ]
+                ]
+            },
+            "language": "en",
+            "page": "1695-1714",
+            "title": "Financial dollarization and systemic risks: New empirical evidence",
+            "title-short": "Financial dollarization and systemic risks",
+            "type": "article-journal",
+            "volume": "31"
+        },
+        {
+            "author": [
+                {
+                    "family": "Rennhack",
+                    "given": "Robert"
+                },
+                {
+                    "family": "Nozaki",
+                    "given": "Masahiro"
+                }
+            ],
+            "id": "rennhack2006",
+            "issued": {
+                "date-parts": [
+                    [
+                        2006
+                    ]
+                ]
+            },
+            "title": "Financial dollarization in latin america",
+            "type": "report"
+        },
+        {
+            "author": [
+                {
+                    "family": "Kokenyne",
+                    "given": "Annamaria"
+                },
+                {
+                    "family": "Ley",
+                    "given": "Jeremy"
+                },
+                {
+                    "family": "Veyrune",
+                    "given": "Romain"
+                }
+            ],
+            "id": "kokenyne2010",
+            "issued": {
+                "date-parts": [
+                    [
+                        2010
+                    ]
+                ]
+            },
+            "title": "Dedollarization",
+            "type": "report"
+        },
+        {
+            "URL": "https://ssrn.com/abstract=305497",
+            "author": [
+                {
+                    "family": "Honig",
+                    "given": "Adam"
+                }
+            ],
+            "container-title": "Journal of International Money and Finance",
+            "id": "honig2009",
+            "issue": "2",
+            "issued": {
+                "date-parts": [
+                    [
+                        2009
+                    ]
+                ]
+            },
+            "page": "198-214",
+            "title": "Dollarization, exchange rate regimes and government quality",
+            "type": "article-journal",
+            "volume": "28"
+        },
+        {
+            "URL": "https://www.researchgate.net/profile/Eduardo-Goncalves-24/publication/272747279_APPRAISING_TECHNOLOGY_INNOVATION_A_METHODOLOGICAL_PROPOSAL/links/571e5cb208aed056fa226d10/APPRAISING-TECHNOLOGY-INNOVATION-A-METHODOLOGICAL-PROPOSAL.pdf#page=29",
+            "author": [
+                {
+                    "family": "Taşseven",
+                    "given": "C\u0016zlem"
+                },
+                {
+                    "family": "Fitzsimmons",
+                    "given": "Adrian P."
+                },
+                {
+                    "family": "Elifoglu",
+                    "given": "I. Hilmi"
+                }
+            ],
+            "container-title": "Journal of Emerging Markets",
+            "id": "tasseven2015",
+            "issue": "1-2",
+            "issued": {
+                "date-parts": [
+                    [
+                        2015
+                    ]
+                ]
+            },
+            "page": "52-68",
+            "title": "Currency substitution in turkey: Macroeconomic determinants",
+            "title-short": "Currency substitution in turkey",
+            "type": "article-journal",
+            "volume": "20"
+        },
+        {
+            "author": [
+                {
+                    "family": "Levy",
+                    "given": "Eduardo"
+                }
+            ],
+            "id": "levy2021",
+            "issued": {
+                "date-parts": [
+                    [
+                        2021
+                    ]
+                ]
+            },
+            "language": "en",
+            "title": "Financial dollarization and de-dollarization in the new millennium",
+            "type": "report"
+        },
+        {
+            "DOI": "10.2307/2673918",
+            "URL": "https://www.jstor.org/stable/2673918?origin=crossref",
+            "author": [
+                {
+                    "family": "Sims",
+                    "given": "Christopher A."
+                }
+            ],
+            "container-title": "Journal of Money, Credit and Banking",
+            "id": "sims2001",
+            "issue": "2",
+            "issued": {
+                "date-parts": [
+                    [
+                        2001,
+                        5
+                    ]
+                ]
+            },
+            "language": "en",
+            "page": "597",
+            "title": "Fiscal Consequences for Mexico of Adopting the Dollar",
+            "type": "article-journal",
+            "volume": "33"
+        },
+        {
+            "author": [
+                {
+                    "family": "Berg",
+                    "given": "Andrew"
+                },
+                {
+                    "family": "Borensztein",
+                    "given": "Eduardo"
+                }
+            ],
+            "id": "berg2000",
+            "issued": {
+                "date-parts": [
+                    [
+                        2000
+                    ]
+                ]
+            },
+            "title": "The dollarization debate",
+            "type": "report"
+        },
+        {
+            "DOI": "10.1016/j.econlet.2021.109996",
+            "URL": "https://linkinghub.elsevier.com/retrieve/pii/S0165176521002731",
+            "author": [
+                {
+                    "family": "Conlon",
+                    "given": "Thomas"
+                },
+                {
+                    "family": "Corbet",
+                    "given": "Shaen"
+                },
+                {
+                    "family": "McGee",
+                    "given": "Richard J."
+                }
+            ],
+            "container-title": "Economics Letters",
+            "id": "conlon2021",
+            "issued": {
+                "date-parts": [
+                    [
+                        2021,
+                        9
+                    ]
+                ]
+            },
+            "language": "en",
+            "page": "109996",
+            "title": "Inflation and cryptocurrencies revisited: A time-scale analysis",
+            "title-short": "Inflation and cryptocurrencies revisited",
+            "type": "article-journal",
+            "volume": "206"
+        },
+        {
+            "DOI": "10.1016/j.frl.2021.102379",
+            "URL": "https://linkinghub.elsevier.com/retrieve/pii/S1544612321003810",
+            "author": [
+                {
+                    "family": "Choi",
+                    "given": "Sangyup"
+                },
+                {
+                    "family": "Shin",
+                    "given": "Junhyeok"
+                }
+            ],
+            "container-title": "Finance Research Letters",
+            "id": "choi2022",
+            "issued": {
+                "date-parts": [
+                    [
+                        2022,
+                        5
+                    ]
+                ]
+            },
+            "language": "en",
+            "page": "102379",
+            "title": "Bitcoin: An inflation hedge but not a safe haven",
+            "title-short": "Bitcoin",
+            "type": "article-journal",
+            "volume": "46"
+        },
+        {
+            "DOI": "10.1016/j.mlwa.2022.100355",
+            "URL": "https://linkinghub.elsevier.com/retrieve/pii/S266682702200055X",
+            "author": [
+                {
+                    "family": "Basher",
+                    "given": "Syed Abul"
+                },
+                {
+                    "family": "Sadorsky",
+                    "given": "Perry"
+                }
+            ],
+            "container-title": "Machine Learning with Applications",
+            "id": "basher2022",
+            "issued": {
+                "date-parts": [
+                    [
+                        2022,
+                        9
+                    ]
+                ]
+            },
+            "language": "en",
+            "page": "100355",
+            "title": "Forecasting Bitcoin price direction with random forests: How important are interest rates, inflation, and market volatility?",
+            "title-short": "Forecasting Bitcoin price direction with random forests",
+            "type": "article-journal",
+            "volume": "9"
+        },
+        {
+            "DOI": "10.1111/acfi.13193",
+            "URL": "https://onlinelibrary.wiley.com/doi/10.1111/acfi.13193",
+            "author": [
+                {
+                    "family": "Smales",
+                    "given": "L. A."
+                }
+            ],
+            "container-title": "Accounting & Finance",
+            "id": "smales2024",
+            "issue": "2",
+            "issued": {
+                "date-parts": [
+                    [
+                        2024,
+                        6
+                    ]
+                ]
+            },
+            "language": "en",
+            "page": "1589-1611",
+            "title": "Cryptocurrency as an alternative inflation hedge?",
+            "type": "article-journal",
+            "volume": "64"
+        },
+        {
+            "DOI": "10.1016/j.ribaf.2024.102302",
+            "URL": "https://linkinghub.elsevier.com/retrieve/pii/S0275531924000953",
+            "author": [
+                {
+                    "family": "Gaies",
+                    "given": "Brahim"
+                },
+                {
+                    "family": "ChaC\"bane",
+                    "given": "Najeh"
+                },
+                {
+                    "family": "Arfaoui",
+                    "given": "Nadia"
+                },
+                {
+                    "family": "Sahut",
+                    "given": "Jean-Michel"
+                }
+            ],
+            "container-title": "Research in International Business and Finance",
+            "id": "gaies2024",
+            "issued": {
+                "date-parts": [
+                    [
+                        2024,
+                        6
+                    ]
+                ]
+            },
+            "language": "en",
+            "page": "102302",
+            "title": "On the resilience of cryptocurrencies: A quantile-frequency analysis of bitcoin and ethereum reactions in times of inflation and financial instability",
+            "title-short": "On the resilience of cryptocurrencies",
+            "type": "article-journal",
+            "volume": "70"
+        },
+        {
+            "DOI": "10.3390/axioms11070339",
+            "URL": "https://www.mdpi.com/2075-1680/11/7/339",
+            "author": [
+                {
+                    "family": "Phochanachan",
+                    "given": "Panisara"
+                },
+                {
+                    "family": "Pirabun",
+                    "given": "Nootchanat"
+                },
+                {
+                    "family": "Leurcharusmee",
+                    "given": "Supanika"
+                },
+                {
+                    "family": "Yamaka",
+                    "given": "Woraphon"
+                }
+            ],
+            "container-title": "Axioms",
+            "id": "phochanachan2022",
+            "issue": "7",
+            "issued": {
+                "date-parts": [
+                    [
+                        2022,
+                        7,
+                        14
+                    ]
+                ]
+            },
+            "language": "en",
+            "page": "339",
+            "title": "Do Bitcoin and Traditional Financial Assets Act as an Inflation Hedge during Stable and Turbulent Markets? Evidence from High Cryptocurrency Adoption Countries",
+            "type": "article-journal",
+            "volume": "11"
+        },
+        {
+            "URL": "http://dx.doi.org/10.2139/ssrn.3477849",
+            "author": [
+                {
+                    "family": "Taskinsoy",
+                    "given": "John"
+                }
+            ],
+            "id": "taskinsoy",
+            "issued": {
+                "date-parts": [
+                    [
+                        2019
+                    ]
+                ]
+            },
+            "title": "Bitcoin and turkey: A good match or a perfect storm?",
+            "title-short": "Bitcoin and turkey",
+            "type": "article-journal"
+        },
+        {
+            "author": [
+                {
+                    "family": "Parino",
+                    "given": "Francesco"
+                },
+                {
+                    "family": "Beiro",
+                    "given": "Mariano G."
+                },
+                {
+                    "family": "Gauvin",
+                    "given": "Laetitia"
+                }
+            ],
+            "id": "parino",
+            "issued": {
+                "date-parts": [
+                    [
+                        2018
+                    ]
+                ]
+            },
+            "language": "en",
+            "title": "Analysis of the Bitcoin blockchain: Socio-economic factors behind the adoption",
+            "title-short": "Analysis of the Bitcoin blockchain",
+            "type": "article-journal"
+        },
+        {
+            "DOI": "10.1007/s40812-019-00143-9",
+            "URL": "http://link.springer.com/10.1007/s40812-019-00143-9",
+            "author": [
+                {
+                    "family": "Ricci",
+                    "given": "Piergiorgio"
+                }
+            ],
+            "container-title": "Journal of Industrial and Business Economics",
+            "id": "ricci2020",
+            "issue": "1",
+            "issued": {
+                "date-parts": [
+                    [
+                        2020,
+                        3
+                    ]
+                ]
+            },
+            "language": "en",
+            "page": "133-161",
+            "title": "How economic freedom reflects on the Bitcoin transaction network",
+            "type": "article-journal",
+            "volume": "47"
+        },
+        {
+            "URL": "http://link.springer.com/10.1007/978-3-030-51280-4_32",
+            "author": [
+                {
+                    "family": "Voskobojnikov",
+                    "given": "Artemij"
+                },
+                {
+                    "family": "Obada-Obieh",
+                    "given": "Borke"
+                },
+                {
+                    "family": "Huang",
+                    "given": "Yue"
+                },
+                {
+                    "family": "Beznosov",
+                    "given": "Konstantin"
+                }
+            ],
+            "editor": [
+                {
+                    "family": "Bonneau",
+                    "given": "Joseph"
+                },
+                {
+                    "family": "Heninger",
+                    "given": "Nadia"
+                }
+            ],
+            "id": "voskobojnikov2020",
+            "issued": {
+                "date-parts": [
+                    [
+                        2020
+                    ]
+                ]
+            },
+            "language": "en",
+            "note": "Series Title: Lecture Notes in Computer Science DOI: 10.1007/978-3-030-51280-4_32",
+            "page": "595-614",
+            "publisher": "Springer International Publishing",
+            "publisher-place": "Cham",
+            "title": "Surviving the Cryptojungle: Perception and Management of Risk Among North American Cryptocurrency (Non)Users",
+            "title-short": "Surviving the Cryptojungle",
+            "type": "chapter",
+            "volume": "12059"
+        },
+        {
+            "author": [
+                {
+                    "family": "Glaser",
+                    "given": "Florian"
+                },
+                {
+                    "family": "Zimmermann",
+                    "given": "Kai"
+                },
+                {
+                    "family": "Haferkorn",
+                    "given": "Martin"
+                },
+                {
+                    "family": "Weber",
+                    "given": "Moritz"
+                },
+                {
+                    "family": "Siering",
+                    "given": "Michael"
+                }
+            ],
+            "id": "glaser2014",
+            "issued": {
+                "date-parts": [
+                    [
+                        2014
+                    ]
+                ]
+            },
+            "publisher-place": "Tel Aviv",
+            "title": "Twenty second european confrence on information systems",
+            "type": "paper-conference"
+        },
+        {
+            "DOI": "10.2139/ssrn.3501549",
+            "URL": "https://www.ssrn.com/abstract=3501549",
+            "author": [
+                {
+                    "family": "Lammer",
+                    "given": "Dominique"
+                },
+                {
+                    "family": "Hanspal",
+                    "given": "Tobin"
+                },
+                {
+                    "family": "Hackethal",
+                    "given": "Andreas"
+                }
+            ],
+            "container-title": "SSRN Electronic Journal",
+            "id": "lammer2019",
+            "issued": {
+                "date-parts": [
+                    [
+                        2019
+                    ]
+                ]
+            },
+            "language": "en",
+            "title": "Who Are the Bitcoin Investors? Evidence from Indirect Cryptocurrency Investments",
+            "type": "article-journal"
+        },
+        {
+            "URL": "https://pahleindia.org/wp-content/uploads/2022/12/Primer-on-Bitcoin.pdf",
+            "author": [
+                {
+                    "family": "Saurabh",
+                    "given": "Roy"
+                }
+            ],
+            "id": "saurabh2017",
+            "issued": {
+                "date-parts": [
+                    [
+                        2017
+                    ]
+                ]
+            },
+            "publisher-place": "India",
+            "title": "Primer on bitcoin",
+            "type": "report"
+        },
+        {
+            "author": [
+                {
+                    "family": "Sarvi",
+                    "given": "Sina"
+                }
+            ],
+            "container-title": "P etroleum",
+            "id": "sarvi2020",
+            "issue": "1",
+            "issued": {
+                "date-parts": [
+                    [
+                        2020
+                    ]
+                ]
+            },
+            "language": "en",
+            "title": "Identification and ranking of the most suitable virtual currencies for selling crude oil under sanctions",
+            "type": "article-journal",
+            "volume": "4"
+        },
+        {
+            "DOI": "10.36642/mjil.42.1.strengthening",
+            "URL": "https://repository.law.umich.edu/mjil/vol42/iss1/6/",
+            "author": [
+                {
+                    "family": "Macfarlane",
+                    "given": "Emma"
+                }
+            ],
+            "container-title": "Michigan Journal of International Law",
+            "id": "macfarlane2021",
+            "issued": {
+                "date-parts": [
+                    [
+                        2021
+                    ]
+                ]
+            },
+            "language": "en",
+            "page": "199",
+            "title": "Strengthening Sanctions: Solutions to Curtail the Evasion of International Economic Sanctions Through the Use of Cryptocurrency",
+            "title-short": "Strengthening Sanctions",
+            "type": "article-journal",
+            "volume": "42"
+        },
+        {
+            "author": [
+                {
+                    "family": "Folkinshteyn",
+                    "given": "Daniel"
+                },
+                {
+                    "family": "Lennon",
+                    "given": "Mark"
+                },
+                {
+                    "family": "Reilly",
+                    "given": "Tim"
+                }
+            ],
+            "id": "folkinshteyn2015",
+            "issue": "2",
+            "issued": {
+                "date-parts": [
+                    [
+                        2015
+                    ]
+                ]
+            },
+            "language": "en",
+            "title": "The Bitcoin Mirage: An Oasis of Financial Remittance",
+            "title-short": "The Bitcoin Mirage",
+            "type": "article-journal"
+        },
+        {
+            "author": [
+                {
+                    "family": "Rühmann",
+                    "given": "Friederike"
+                },
+                {
+                    "family": "Konda",
+                    "given": "Sai Aashirvad"
+                },
+                {
+                    "family": "Horrocks",
+                    "given": "Paul"
+                },
+                {
+                    "family": "Taka",
+                    "given": "Nina"
+                }
+            ],
+            "id": "ruehmann2020",
+            "issued": {
+                "date-parts": [
+                    [
+                        2020
+                    ]
+                ]
+            },
+            "language": "en",
+            "title": "Can blockchain technology reduce the cost of remittances?",
+            "type": "report"
+        },
+        {
+            "DOI": "10.1016/j.econlet.2018.07.032",
+            "URL": "https://linkinghub.elsevier.com/retrieve/pii/S0165176518302921",
+            "author": [
+                {
+                    "family": "Dyhrberg",
+                    "given": "Anne H."
+                },
+                {
+                    "family": "Foley",
+                    "given": "Sean"
+                },
+                {
+                    "family": "Svec",
+                    "given": "Jiri"
+                }
+            ],
+            "container-title": "Economics Letters",
+            "id": "dyhrberg2018",
+            "issued": {
+                "date-parts": [
+                    [
+                        2018,
+                        10
+                    ]
+                ]
+            },
+            "language": "en",
+            "page": "140-143",
+            "title": "How investible is Bitcoin? Analyzing the liquidity and transaction costs of Bitcoin markets",
+            "type": "article-journal",
+            "volume": "171"
+        },
+        {
+            "URL": "https://www.bbc.com/news/world-latin-america-57398274",
+            "author": [
+                {
+                    "family": "BBC"
+                }
+            ],
+            "container-title": "BBC",
+            "id": "bbc2021",
+            "issued": {
+                "date-parts": [
+                    [
+                        2021
+                    ]
+                ]
+            },
+            "title": "Bitcoin: El salvador makes cryptocurrency legal tender",
+            "title-short": "Bitcoin",
+            "type": "article-journal"
+        },
+        {
+            "author": [
+                {
+                    "family": "Carlson",
+                    "given": "Jill"
+                }
+            ],
+            "container-title": "SSRN",
+            "id": "carlson2016",
+            "issued": {
+                "date-parts": [
+                    [
+                        2016
+                    ]
+                ]
+            },
+            "title": "Cryptocurrency and capital controls",
+            "type": "article-journal"
+        },
+        {
+            "URL": "https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2666243",
+            "author": [
+                {
+                    "family": "Viglione",
+                    "given": "Robert"
+                }
+            ],
+            "container-title": "SSRN",
+            "id": "viglione2015",
+            "issued": {
+                "date-parts": [
+                    [
+                        2015
+                    ]
+                ]
+            },
+            "title": "Does governance have a role in pricing? Cross-country evidence from bitcoin markets",
+            "type": "article-journal"
+        },
+        {
+            "DOI": "10.2478/sbe-2024-0020",
+            "URL": "https://www.sciendo.com/article/10.2478/sbe-2024-0020",
+            "author": [
+                {
+                    "family": "Orăştean",
+                    "given": "Ramona"
+                },
+                {
+                    "family": "Mărginean",
+                    "given": "Silvia Cristina"
+                },
+                {
+                    "family": "Sava",
+                    "given": "Raluca"
+                }
+            ],
+            "container-title": "Studies in Business and Economics",
+            "id": "orastean2024",
+            "issue": "1",
+            "issued": {
+                "date-parts": [
+                    [
+                        2024,
+                        4,
+                        1
+                    ]
+                ]
+            },
+            "language": "en",
+            "page": "368-379",
+            "title": "Exploring the Relationship Between Google Trends and Cryptocurrency Metrics",
+            "type": "article-journal",
+            "volume": "19"
+        },
+        {
+            "DOI": "10.3390/info11040234",
+            "URL": "https://www.mdpi.com/2078-2489/11/4/234",
+            "author": [
+                {
+                    "family": "Stolarski",
+                    "given": "Piotr"
+                },
+                {
+                    "family": "Lewoniewski",
+                    "given": "Włodzimierz"
+                },
+                {
+                    "family": "Abramowicz",
+                    "given": "Witold"
+                }
+            ],
+            "container-title": "Information",
+            "id": "stolarski2020",
+            "issue": "4",
+            "issued": {
+                "date-parts": [
+                    [
+                        2020,
+                        4,
+                        24
+                    ]
+                ]
+            },
+            "language": "en",
+            "page": "234",
+            "title": "Cryptocurrencies Perception Using Wikipedia and Google Trends",
+            "type": "article-journal",
+            "volume": "11"
+        },
+        {
+            "URL": "https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4920251",
+            "author": [
+                {
+                    "family": "Du",
+                    "given": "Wei"
+                },
+                {
+                    "family": "Jia",
+                    "given": "Z. Tingting"
+                },
+                {
+                    "family": "Zhu"
+                }
+            ],
+            "container-title": "SSRN",
+            "id": "du2024",
+            "issued": {
+                "date-parts": [
+                    [
+                        2024
+                    ]
+                ]
+            },
+            "language": "en",
+            "title": "Country Culture and Bitcoin Early Adoption",
+            "type": "article-journal"
+        },
+        {
+            "DOI": "10.2139/ssrn.3956933",
+            "URL": "https://www.ssrn.com/abstract=3956933",
+            "author": [
+                {
+                    "family": "Hu",
+                    "given": "Maggie"
+                },
+                {
+                    "family": "Lee",
+                    "given": "Adrian D."
+                },
+                {
+                    "family": "Putnins",
+                    "given": "Talis J."
+                }
+            ],
+            "container-title": "SSRN Electronic Journal",
+            "id": "hu2021",
+            "issued": {
+                "date-parts": [
+                    [
+                        2021
+                    ]
+                ]
+            },
+            "language": "en",
+            "title": "Evading Capital Controls via Cryptocurrencies: Evidence from the Blockchain",
+            "title-short": "Evading Capital Controls via Cryptocurrencies",
+            "type": "article-journal"
+        },
+        {
+            "URL": "https://blog.chainalysis.com/reports/2020-global-cryptocurrency-adoption-index-2020",
+            "author": [
+                {
+                    "family": "Chainalysis"
+                }
+            ],
+            "id": "chainalysis2020",
+            "issued": {
+                "date-parts": [
+                    [
+                        2020
+                    ]
+                ]
+            },
+            "title": "The 2020 global crypto adopption index: Cryptocurrency is a global phenomenon",
+            "title-short": "The 2020 global crypto adopption index",
+            "type": "report"
+        },
+        {
+            "URL": "https://data.worldbank.org/indicator/NY.GDP.PCAP.CD",
+            "author": [
+                {
+                    "family": "World Bank"
+                }
+            ],
+            "id": "worldbank2024_GDP",
+            "issued": {
+                "date-parts": [
+                    [
+                        2024
+                    ]
+                ]
+            },
+            "title": "GDP per capita (current US$)",
+            "type": ""
+        },
+        {
+            "URL": "https://data.worldbank.org/indicator/NY.GDS.TOTL.ZS",
+            "author": [
+                {
+                    "family": "World Bank"
+                }
+            ],
+            "id": "worldbank2024_Savings",
+            "issued": {
+                "date-parts": [
+                    [
+                        2024
+                    ]
+                ]
+            },
+            "title": "Gross domestic savings (% of GDP)",
+            "type": ""
+        },
+        {
+            "URL": "https://data.worldbank.org/indicator/BX.TRF.PWKR.DT.GD.ZS",
+            "author": [
+                {
+                    "family": "World Bank"
+                }
+            ],
+            "id": "worldbank2024_RemittReceived",
+            "issued": {
+                "date-parts": [
+                    [
+                        2024
+                    ]
+                ]
+            },
+            "title": "Personal remittances, received (% of GDP)",
+            "type": ""
+        },
+        {
+            "URL": "https://data.worldbank.org/indicator/FP.CPI.TOTL.ZG",
+            "author": [
+                {
+                    "family": "World Bank"
+                }
+            ],
+            "id": "worldbank2024_Inflation",
+            "issued": {
+                "date-parts": [
+                    [
+                        2024
+                    ]
+                ]
+            },
+            "title": "Inflation, consumer prices (annual %)",
+            "type": ""
+        },
+        {
+            "URL": "https://data.worldbank.org/indicator/IT.CEL.SETS.P2",
+            "author": [
+                {
+                    "family": "World Bank"
+                }
+            ],
+            "id": "worldbank2024_MobileSub",
+            "issued": {
+                "date-parts": [
+                    [
+                        2024
+                    ]
+                ]
+            },
+            "title": "Mobile cellular subscriptions (per 100 people)",
+            "type": ""
+        },
+        {
+            "URL": "https://www.focus-economics.com/economic-indicator/external-debt/",
+            "author": [
+                {
+                    "family": "Focus Economics"
+                }
+            ],
+            "id": "focuseconomics2024",
+            "issued": {
+                "date-parts": [
+                    [
+                        2024,
+                        9,
+                        2
+                    ]
+                ]
+            },
+            "language": "en-US",
+            "title": "External debt (",
+            "type": ""
+        },
+        {
+            "DOI": "https://doi.org/10.1080/00036840903357413",
+            "author": [
+                {
+                    "family": "Stix",
+                    "given": "Helmut"
+                }
+            ],
+            "container-title": "Applied Economics",
+            "id": "stix2011",
+            "issue": "21",
+            "issued": {
+                "date-parts": [
+                    [
+                        2011
+                    ]
+                ]
+            },
+            "page": "2689-2704",
+            "title": "Euroization: What factors drive its persistence? Household data evidence for croatia, slovenia and slovakia",
+            "title-short": "Euroization",
+            "type": "article-journal",
+            "volume": "43"
+        },
+        {
+            "DOI": "https://econ.berkeley.edu/sites/default/files/ECON_H195B_Thesis%20(8).pdf",
+            "author": [
+                {
+                    "family": "Ju",
+                    "given": "Jewon"
+                }
+            ],
+            "container-title": "University of California at Berkley, Department of Economics",
+            "id": "ju",
+            "issued": {
+                "date-parts": [
+                    [
+                        2020
+                    ]
+                ]
+            },
+            "language": "en",
+            "title": "The Relationship Between Currency Substitution and Exchange Rate Volatility",
+            "type": "article-journal"
+        },
+        {
+            "DOI": "10.33429/Cjas.11220.1/8",
+            "URL": "https://www.cbn.gov.ng/Out/2021/STD/1-28.pdf",
+            "author": [
+                {
+                    "family": "Ajibola",
+                    "given": "Isaiah O."
+                },
+                {
+                    "family": "Udoette",
+                    "given": "Sylvanus U."
+                },
+                {
+                    "family": "Muhammad",
+                    "given": "Rabia U."
+                },
+                {
+                    "family": "Anigwe",
+                    "given": "John O."
+                }
+            ],
+            "container-title": "Central Bank of Nigeria Journal of Applied Statistics",
+            "id": "ajibola2021",
+            "issue": "2",
+            "issued": {
+                "date-parts": [
+                    [
+                        2021,
+                        4,
+                        8
+                    ]
+                ]
+            },
+            "language": "en",
+            "page": "1-28",
+            "title": "Currency Substitution and Exchange Rate Volatility in Nigeria: An Autoregressive Distributed Lag Approach",
+            "title-short": "Currency Substitution and Exchange Rate Volatility in Nigeria",
+            "type": "article-journal",
+            "volume": "11"
+        },
+        {
+            "URL": "https://www.jstor.org/stable/pdf/2077823.pdf",
+            "author": [
+                {
+                    "family": "Guidotti",
+                    "given": "Pablo E"
+                }
+            ],
+            "container-title": "Journal of Money, Credit and Banking",
+            "id": "guidotti1993",
+            "issue": "1",
+            "issued": {
+                "date-parts": [
+                    [
+                        1993
+                    ]
+                ]
+            },
+            "language": "en",
+            "page": "109-124",
+            "title": "Currency Substitution and Financial Innovation",
+            "type": "article-journal",
+            "volume": "25"
+        },
+        {
+            "DOI": "10.1111/saje.12300",
+            "URL": "https://onlinelibrary.wiley.com/doi/10.1111/saje.12300",
+            "author": [
+                {
+                    "family": "Ujunwa",
+                    "given": "Angela Ifeanyi"
+                },
+                {
+                    "family": "Ujunwa",
+                    "given": "Augustine"
+                },
+                {
+                    "family": "Onah",
+                    "given": "Emmanuel"
+                },
+                {
+                    "family": "Nwonye",
+                    "given": "Nnenna Georgina"
+                },
+                {
+                    "family": "Chukwunwike",
+                    "given": "Onyedikachi David"
+                }
+            ],
+            "container-title": "South African Journal of Economics",
+            "id": "ujunwa2021",
+            "issue": "4",
+            "issued": {
+                "date-parts": [
+                    [
+                        2021,
+                        12
+                    ]
+                ]
+            },
+            "language": "en",
+            "page": "1-18",
+            "title": "Extending the determinants of currency substitution in Nigeria: Any role for financial innovation?",
+            "title-short": "Extending the determinants of currency substitution in Nigeria",
+            "type": "article-journal"
+        },
+        {
+            "URL": "https://data.worldbank.org/indicator/NY.GDS.TOTL.ZS",
+            "author": [
+                {
+                    "family": "World Bank"
+                }
+            ],
+            "id": "worldbank2024",
+            "issued": {
+                "date-parts": [
+                    [
+                        2024
+                    ]
+                ]
+            },
+            "title": "Gross domestic savings (",
+            "type": ""
+        },
+        {
+            "DOI": "10.1016/j.econlet.2021.109926",
+            "URL": "https://linkinghub.elsevier.com/retrieve/pii/S0165176521002032",
+            "author": [
+                {
+                    "family": "Marmora",
+                    "given": "Paul"
+                }
+            ],
+            "container-title": "Economics Letters",
+            "id": "marmora2021",
+            "issued": {
+                "date-parts": [
+                    [
+                        2021,
+                        8
+                    ]
+                ]
+            },
+            "language": "en",
+            "page": "109926",
+            "title": "Currency substitution in the shadow economy: International panel evidence using local Bitcoin trade volume",
+            "title-short": "Currency substitution in the shadow economy",
+            "type": "article-journal",
+            "volume": "205"
+        },
+        {
+            "URL": "https://www.statista.com/statistics/1202468/global-cryptocurrency-ownership/",
+            "author": [
+                {
+                    "family": "Statista"
+                }
+            ],
+            "id": "statista_adoption",
+            "issued": {
+                "date-parts": [
+                    [
+                        2024
+                    ]
+                ]
+            },
+            "language": "en",
+            "title": "Crypto ownership by country 2019-2024",
+            "type": ""
+        },
+        {
+            "URL": "https://www.statista.com/statistics/730782/cryptocurrencies-market-capitalization/",
+            "author": [
+                {
+                    "family": "Statista"
+                }
+            ],
+            "id": "statista_btc_share",
+            "issued": {
+                "date-parts": [
+                    [
+                        2024
+                    ]
+                ]
+            },
+            "language": "en",
+            "title": "Dominance of Bitcoin and other crypto in the overall market from 2nd quarter of 2013 to 2nd quarter of 2024",
+            "type": ""
+        },
+        {
+            "URL": "https://www.columbia.edu/~mu2166/fkrsu/",
+            "author": [
+                {
+                    "family": "Fernandez",
+                    "given": "Andres"
+                },
+                {
+                    "family": "Klein",
+                    "given": "Michael"
+                },
+                {
+                    "family": "Rebucci",
+                    "given": "Alessandro"
+                },
+                {
+                    "family": "Schindler",
+                    "given": "Martin"
+                },
+                {
+                    "family": "Uribe",
+                    "given": "Martin"
+                }
+            ],
+            "container-title": "IMF Economic Review",
+            "id": "fernandez2016",
+            "issued": {
+                "date-parts": [
+                    [
+                        2016
+                    ]
+                ]
+            },
+            "page": "548-574",
+            "title": "Capital control measures: A new dataset",
+            "title-short": "Capital control measures",
+            "type": "article-journal",
+            "volume": "64"
+        },
+        {
+            "URL": "https://home.treasury.gov/news/press-releases/jy1155",
+            "author": [
+                {
+                    "family": "U. S. Department of the Treasury"
+                }
+            ],
+            "id": "u.s.departmentofthetreasury2022",
+            "issued": {
+                "date-parts": [
+                    [
+                        2022,
+                        12,
+                        9
+                    ]
+                ]
+            },
+            "language": "en",
+            "title": "Treasury Sanctions Over 40 Individuals and Entities Across Nine Countries Connected to Corruption and Human Rights Abuse",
+            "type": ""
+        },
+        {
+            "URL": "https://www.statstutor.ac.uk/resources/uploaded/spearmans.pdf",
+            "author": [
+                {
+                    "given": "Statstutor UK"
+                }
+            ],
+            "id": "spearman",
+            "title": "Spearman’s correlation",
+            "type": ""
+        },
+        {
+            "URL": "https://www.andrewheiss.com/blog/2021/12/01/multilevel-models-panel-data-guide/",
+            "author": [
+                {
+                    "family": "Heiss",
+                    "given": "Andrew"
+                }
+            ],
+            "id": "heiss2021",
+            "issued": {
+                "date-parts": [
+                    [
+                        2021
+                    ]
+                ]
+            },
+            "title": "A guide to working with country-year panel data and bayesian multilevel models",
+            "type": ""
+        },
+        {
+            "author": [
+                {
+                    "family": "Dougherty",
+                    "given": "Christopher"
+                }
+            ],
+            "edition": "4th ed",
+            "id": "dougherty2011",
+            "issued": {
+                "date-parts": [
+                    [
+                        2011
+                    ]
+                ]
+            },
+            "language": "en",
+            "note": "OCLC: ocn653082405",
+            "publisher": "Oxford University Press",
+            "publisher-place": "Oxford",
+            "title": "Introduction to Econometrics",
+            "type": "book"
+        },
+        {
+            "URL": "https://libguides.princeton.edu/c.php?g=1259303&p=9229770",
+            "author": [
+                {
+                    "family": "Amin",
+                    "given": "Muhammad Al"
+                },
+                {
+                    "family": "Qin",
+                    "given": "Yufei"
+                }
+            ],
+            "id": "amin2024",
+            "issued": {
+                "date-parts": [
+                    [
+                        2024
+                    ]
+                ]
+            },
+            "language": "en",
+            "title": "Research Guides: Panel Data Using Stata: Fixed Effects and Random Effects",
+            "title-short": "Research Guides",
+            "type": ""
+        },
+        {
+            "URL": "https://www.elibrary-areaer.imf.org/Pages/ChapterQuery.aspx",
+            "author": [
+                {
+                    "literal": "IMF"
+                }
+            ],
+            "id": "imf2024",
+            "issued": {
+                "date-parts": [
+                    [
+                        2024
+                    ]
+                ]
+            },
+            "title": "IMF AREAER database",
+            "type": "article-journal"
+        },
+        {
+            "DOI": "10.1016/j.qref.2018.05.010",
+            "URL": "https://linkinghub.elsevier.com/retrieve/pii/S1062976917300777",
+            "author": [
+                {
+                    "family": "Ammous",
+                    "given": "Saifedean"
+                }
+            ],
+            "container-title": "The Quarterly Review of Economics and Finance",
+            "id": "ammous2018",
+            "issued": {
+                "date-parts": [
+                    [
+                        2018,
+                        11
+                    ]
+                ]
+            },
+            "language": "en",
+            "page": "38-51",
+            "title": "Can cryptocurrencies fulfil the functions of money?",
+            "type": "article-journal",
+            "volume": "70"
+        },
+        {
+            "URL": "https://ourworldindata.org/grapher/political-corruption-index?tab=chart",
+            "author": [
+                {
+                    "literal": "V-Dem"
+                }
+            ],
+            "id": "politica2024",
+            "issued": {
+                "date-parts": [
+                    [
+                        2024
+                    ]
+                ]
+            },
+            "title": "Political corruption index",
+            "type": "article-journal"
+        },
+        {
+            "URL": "https://www.unodc.org/pdf/crime/forum/forum3_Art1.pdf",
+            "author": [
+                {
+                    "family": "Buscaglia",
+                    "given": "Edgardo"
+                },
+                {
+                    "dropping-particle": "van",
+                    "family": "Dijk",
+                    "given": "Jan"
+                }
+            ],
+            "container-title": "Forum on Crime and Society",
+            "id": "buscaglia2003",
+            "issued": {
+                "date-parts": [
+                    [
+                        2003
+                    ]
+                ]
+            },
+            "language": "en",
+            "title": "Controlling Organized Crime and Corruption in the Public Sector",
+            "type": "article-journal",
+            "volume": "3"
+        },
+        {
+            "URL": "http://link.springer.com/10.1007/s12117-010-9113-x",
+            "author": [
+                {
+                    "dropping-particle": "for the",
+                    "family": "Study of Democracy",
+                    "given": "Center"
+                }
+            ],
+            "id": "centerforthestudyofdemocracy2010",
+            "issued": {
+                "date-parts": [
+                    [
+                        2010,
+                        12
+                    ]
+                ]
+            },
+            "language": "en",
+            "title": "Examining the links between organised crime and corruption",
+            "type": "report"
+        },
+        {
+            "DOI": "10.1111/j.1468-2346.2007.00674.x",
+            "URL": "https://academic.oup.com/ia/article-lookup/doi/10.1111/j.1468-2346.2007.00674.x",
+            "author": [
+                {
+                    "family": "Mazzitelli",
+                    "given": "Antonio L."
+                }
+            ],
+            "container-title": "International Affairs",
+            "id": "mazzitelli2007",
+            "issue": "6",
+            "issued": {
+                "date-parts": [
+                    [
+                        2007,
+                        11
+                    ]
+                ]
+            },
+            "language": "en",
+            "page": "1071-1090",
+            "title": "Transnational Organized Crime in West Africa: The Additional Challenge",
+            "title-short": "Transnational Organized Crime in West Africa",
+            "type": "article-journal",
+            "volume": "83"
+        }
+    ],
+    "project_biblios": []
+}

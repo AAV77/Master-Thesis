@@ -1,0 +1,2 @@
+"0","setwd(""C:/Users/vaylo/OneDrive/Desktop/Masters Thesis/Working Directory/Data"")"
+"2","Warning: The working directory was changed to C:/Users/vaylo/OneDrive/Desktop/Masters Thesis/Working Directory/Data inside a notebook chunk. The working directory will be reset when the chunk is finished running. Use the knitr root.dir option in the setup chunk to change the working directory for notebook chunks."
