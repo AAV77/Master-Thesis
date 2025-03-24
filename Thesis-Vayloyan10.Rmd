@@ -327,9 +327,9 @@ d.Adoption$Country <- countrycode(d.Adoption$Country, "country.name", "iso3c")
 
 # Motivation and Topic Definition
 
-The development of cryptocurrencies, spawned alongside blockchain technology, have challenged traditional monetary systems and economic structures. Since its inception in the wake of the Global Financial Crisis, cryptocurrencies and particularily Bitcoin have been championed by advocates for its decentralized nature, security, and potential as a replacement for fiat currencies. Cryptocurrencies are often viewed as a solution for individuals and nations where conventional financial systems are dysfunctional or highly volatile, providing an alternative currency that is not controlled by the same rules as a potentially dysfunctional monetary system.
+The development of cryptocurrencies, spawned alongside blockchain technology, have challenged traditional monetary systems and economic structures. Since its inception in the wake of the Global Financial Crisis, cryptocurrencies and particularily Bitcoin have been championed by advocates for its decentralized nature, security, and potential as a replacement for fiat currencies. Cryptocurrencies are often viewed as a solution for individuals and nations where conventional financial systems are dysfunctional or highly volatile, providing an alternative currency that is not controlled by the same rules as a potentially suboptimal monetary system.
 
-A definition of cryptocurrencies, is required. @arslanian2022 provides a useful taxonomy of digital assets. With cryptocurrencies, this paper means an digital asset falling into the bracket of being "**fungible**" and in the sub-bracket "**payment** **token**". Fungibility refers to individual tokens being functionally equivalent - there is no reason to prefer one token of a certain digital asset over another. This is similar to how no one pays attention about the serial number of a fiat bill. Within the fungible category, there are 3 categories, of which only the payment token is relevant for this paper. These are those fungible crypto assets designed to fulfill the functions of money (medium of exchange, store of value, unit of account). These tokens share the following general characteristics: time and location independent availability, (theoretical) security, speed, low-fee transactions, irreversible transactions, (pseudo) anonymity. Three distinct sub-categories of these tokens are now discussed.
+A definition of cryptocurrencies is required. @arslanian2022 provides a useful taxonomy of digital assets. With cryptocurrencies, this paper means any digital asset falling into the bracket of being "**fungible**" and in the sub-bracket "**payment** **token**". Fungibility refers to individual tokens being functionally equivalent - there is no reason to prefer one token of a certain digital asset over another. This is similar to how no one pays attention to the serial number of a fiat bill. Within the fungible category, there are 3 categories, of which only the payment token is relevant for this paper. These are those fungible crypto assets designed to fulfill the functions of money (medium of exchange, store of value, unit of account). These tokens share the following general characteristics: time and location independent availability, (theoretical) security, speed, low-fee transactions, irreversible transactions, (pseudo) anonymity. Three distinct sub-categories of these tokens are now discussed.
 
 ## "Traditional" Cryptocurrencies
 
@@ -343,7 +343,7 @@ An important subset of payment tokens in relation to this topic are stablecoins.
 
 2.  Backing of the stablecoin by one or more cryptocurrencies, not issued by the same entity as the stablecoin.
 
-3.  Backing of the stablecoin by one or more cryptocurrency issued by the same entity as the stablecoin, which can be used to manipulate the price of the stablecoin (algorithmic stablecoins).
+3.  Backing of the stablecoin by one or more cryptocurrency issued by the same entity as the stablecoin, which can be used to alter the price of the stablecoin, with the goal of maintaining a desired peg (algorithmic stablecoins).
 
 4.  A suggested market mechanism for stability has also been found in the research. Some papers argue that the increased purchase of stablecoins during market downturns, rather than traditional cryptocurrencies acts as an additional stabilizing force for stablecoin's prices, beyond the currency architecture [@baur2021; @lyons2020].
 
@@ -598,10 +598,20 @@ Panel data gives the choice between fixed or random effects to account for omitt
 
 ```{=tex}
 \begin{align*}  
-\text{Here Specification for Model 3}
+Adoption_{it} = \beta_1 \cdot Inflation_{it} 
++ \beta_2 \cdot GDS_{it} 
++ \beta_3 \cdot GDP_{it} 
++ \beta_4 \cdot Corruption_{it} \\ 
++ \beta_5 \cdot RR_{it} 
++ \beta_6 \cdot CC_{it} 
++ \beta_7 \cdot ED_{it} + \alpha_i + \varepsilon_{it}
 \end{align*}
 ```
-[[**Here describe any neccesary model specifications**]{.underline}]
+The term $\varepsilon_{i,t}$ represents the error term for each country and time.
+
+The term $\alpha_i$ represents country specific, time invariant effects.
+
+Notice the loss of the intercept $\beta_0$ [[**explain why the intercept is lost**]{.underline}].
 
 ## Hypothesis
 
@@ -1860,6 +1870,33 @@ ggplot(m.3_residuals, aes(x = residuals)) +
   theme_minimal()
 ```
 
+```{r coefficients-alpha, echo = F}
+m3_alpha <- base::as.data.frame(fixef(m3.fixed))
+colnames(m3_alpha) = c("Country Alpha")
+m3_alpha$Country <- rownames(m3_alpha)
+
+# Step 2: Reorder columns (optional, just for neatness)
+m3_alpha <- m3_alpha[, c("Country", "Country Alpha")]
+
+# Step 3: Format for display: "ARG: -3.03"
+m3_alpha$Label <- paste0(m3_alpha$Country, ": ", round(m3_alpha$`Country Alpha`, 2))
+
+# Step 4: Set number of columns you want per row (e.g., 8)
+cols_per_row <- 5
+
+# Step 5: Reshape into a matrix (fewer rows, more columns)
+alpha_matrix <- matrix(m3_alpha$Label, ncol = cols_per_row, byrow = TRUE)
+
+# Step 6: Convert to data frame and show nicely
+alpha_wide <- as.data.frame(alpha_matrix)
+
+#kable(m3_alpha, caption = "Model 3 Fit Summary", format = "latex", booktabs = TRUE, escape = FALSE) %>%
+ # kable_styling(latex_options = c("hold_position", "booktabs"))
+colnames(alpha_wide) <- NULL
+kable(alpha_wide, caption = "Model 3: Country Fixed Effects (Alpha Coefficients)", align = "l", row.names = F) %>% 
+  kable_styling(latex_options = c("hold_position"))
+```
+
 \newpage
 
 # Discussion
@@ -1874,7 +1911,11 @@ ggplot(m.3_residuals, aes(x = residuals)) +
 
 Point 1: Despite the inclusion of a variable considering Capital Controls by creating an index, this variable brought considerable challenges from a technical side, as despite theoretically being continuous, with the inclusion of enough variables.
 
-Point 2: Causality not established
+Point 2: Causality not established.
+
+Point 3: It would have been good to include more granular predictors. This was not feasible due to the lacking data size, using dimensional reduction techniques such as PCA, which would allow the inclusion of more variables.
+
+Point 4: Barely any variation in the *d.CC* variable, while technically the coefficient can still be estimated, this is an issue for generalizability, particularily in the fixed effects model.
 
 ## Future Research
 
